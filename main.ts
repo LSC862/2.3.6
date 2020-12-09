@@ -607,10 +607,12 @@ namespace Sensor {
         Not_ringing = 0x02,
     }
 
+	
+
   /**
         * Buzzer   weight=100 blockId=Buzzer block="Buzzer set port %port|get %buzzer"
      */   
-    //% weight=100 blockId=Buzzer block="Buzzer(P0):| %buzzer"
+    //% weight=100 blockId=Buzzer block="Buzzer|port %port| value| %buzzer"
     export function Buzzer(port:hicbit_Port,buz: buzzer): void {
         if(port==hicbit_Port.port1)
         switch(buz){
