@@ -536,20 +536,53 @@ namespace Sensor {
         Not_ringing = 0x02,
     }
 
-    /**
-        * Buzzer
-        
-    //% weight=100 blockId=Buzzer block="Buzzer(P0):| %buzzer"
-    export function Buzzer(buz: buzzer): void {
-        switch (buz) {
+/**
+        * Buzzer   weight=100 blockId=Buzzer block="Buzzer set port %port|get %buzzer"
+     */   
+    //% weight=100 blockId=Buzzer block="Buzzer|port %port| get|value %buzzer"
+    export function Buzzer(port:hicbit_Port,buz: buzzer): void {
+        if(port==hicbit_Port.port1)
+        switch(buz){
+                case Sensor.buzzer.ring:
+                    pins.digitalWritePin(DigitalPin.P1, 1);
+                    break;
+                case Sensor.buzzer.Not_ringing:
+                    pins.digitalWritePin(DigitalPin.P1, 0);
+                    break;
+                
+        }
+        if(port==hicbit_Port.port2)
+        switch(buz)
+        {
             case Sensor.buzzer.ring:
-                pins.digitalWritePin(DigitalPin.P0, 1);
+                pins.digitalWritePin(DigitalPin.P2, 1);
                 break;
             case Sensor.buzzer.Not_ringing:
-                pins.digitalWritePin(DigitalPin.P0, 0);
+                pins.digitalWritePin(DigitalPin.P2, 0);
                 break;
+            
         }
-    }*/
+        if(port==hicbit_Port.port3)
+        switch(buz){
+            case Sensor.buzzer.ring:
+                pins.digitalWritePin(DigitalPin.P3, 1);
+                break;
+            case Sensor.buzzer.Not_ringing:
+                pins.digitalWritePin(DigitalPin.P3, 0);
+                break;
+            
+        }
+        if(port==hicbit_Port.port4)
+        switch(buz){
+            case Sensor.buzzer.ring:
+                pins.digitalWritePin(DigitalPin.P4, 1);
+                break;
+            case Sensor.buzzer.Not_ringing:
+                pins.digitalWritePin(DigitalPin.P4, 0);
+                break;
+            
+        }
+    }
 
     /**
      * Get the line follower sensor port ad value 巡线
