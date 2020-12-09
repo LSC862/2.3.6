@@ -458,39 +458,32 @@ namespace hicbit {
     //% weight=97 blockId=hicbit_setCodedmotor block="Set |port %port| motor|angle %angle|and |speed %speed|"
     //% angle.min=-360 angle.max=360
     export function hicbit_setCodedmotor(port: hicbit_Coded_motor_Port,angle: number,speed:Coded_motor_speed) {
-        let angle_H: number = 0;    //角度高8位
-        let angle_L: number = 0;    //角度低8位
-        let turn: number = 0;
-        let buf = pins.createBuffer(8);
+         let direction: number = 0;
+        let buf = pins.createBuffer(5);
 
-        if (angle < 0)
-        {
-            turn = 1;           //反转
-            angle *= -1;
+        if(speed<0){
+            direction=0x02;
+            speed=-speed
+        }else if(speed==0x00){
+            direction=0x00
+            speed=speed
         }
-        else
-            turn = 0;           //正转
-        
-        if (angle >= 256)
-        {
-            angle_H = angle / 0xff;
-            angle_L = angle % 0xff;
+        else{
+            direction=0x01
+            speed=speed
         }
-        else
-            angle_L = angle;
         
+
         buf[0] = 0x59;      //标志位
-        buf[1] = angle_H;   //角度高8位
-        buf[2] = angle_L;   //角度低8位
-        buf[3] = turn;      //正反转
-        buf[4] = port - 1;  //端口
-        buf[5] = 0;         //圈数
-        buf[6] = speed;
-        buf[7] = 0;         //0：绝对位置 1：相对位置
+        buf[1] = direction
+        buf[2] = angle
+        buf[3] = 0x00;
+        buf[4] = port;
         serial.writeBuffer(buf);
         serial.writeString(NEW_LINE);
 
-        basic.pause(200);
+
+        basic.pause(100);
     }
 
 }
