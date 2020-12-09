@@ -539,7 +539,7 @@ namespace Sensor {
 /**
         * Buzzer   weight=100 blockId=Buzzer block="Buzzer set port %port|get %buzzer"
      */   
-    //% weight=100 blockId=Buzzer block="Buzzer|port %port| get|value %buzzer"
+    //% weight=100 blockId=Buzzer block="Buzzer|port %port| get|value %buz"
     export function Buzzer(port:hicbit_Port,buz: buzzer): void {
         if(port==hicbit_Port.port1)
         switch(buz){
