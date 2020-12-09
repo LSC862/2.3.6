@@ -162,17 +162,17 @@ namespace hicbit {
         slow = 0x40,
     }
 
-    /**
+       /**
     *	Set interface motor speed , range of -255~255, that can control turn.etc.
     */
-    //% weight=99 blockId=hicbit_set_Single_motor block="Set |port %hicbit_Port| motor|speed %speed| |Features %Features|: |%content|"
+    //% weight=99 blockId=hicbit_set_Single_motor block="Set |port %port| motor|speed %speed| |Features %Features|: |%content|"
     //% speed.min=-255 speed.max=255 
     //% inlineInputMode=inline
-    export function hicbit_set_Single_motor(port: hicbit_Port, speed: number, Features: hicbit_Features, content: number) {
+    export function hicbit_set_Single_motor(port: hicbit_Coded_motor_Port, speed: number, Features: hicbit_Features, content: number) {
         //启动变量
         let Turn: number = 0;
         let ports: number = 0;
-        let speed1: number = 0;
+        let direction: number = 0;
         let speed2: number = 0;
         let buf = pins.createBuffer(5);
 
@@ -182,111 +182,75 @@ namespace hicbit {
 
         //角度变量
         let angle: number = 0 ;     //角度值
-        let angle_H: number = 0;    //角度高8位
-        let angle_L: number = 0;    //角度低8位
-        let turn: number = 0;
         let buf3 = pins.createBuffer(8);
 
         //圈数变量
         let num_of_turn: number = 0 ;
 
-        if (speed > 255 || speed < -255) {
-            return;
+        if(speed<0){
+            direction=0x02;
+            speed=-speed
+        }else if(speed==0x00){
+            direction=0x00
+            speed=speed
+        }
+        else{
+            direction=0x01
+            speed=speed
         }
         
-        if (Features == 1||Features == 3)                   //启动&时间
+        if (Features == 1)                   //启动
         {
 
-            if (port == 1 || port == 3)
-                speed1 = speed;
-            else if (port == 2 || port == 4)
-                speed2 = speed;
-            
-            if (port == 1 || port == 2)
-                ports = 0;      //第一组tb6612
-            else if (port == 3 || port == 4)
-                ports = 1;      //第二组tb6612
-
-            if (speed1 < 0) {
-                speed1 = speed1 * -1;
-                if (speed2 > 0)
-                    Turn = 1;//电机1：反 电机2：正
-                else {
-                    speed2 = speed2 * -1;
-                    Turn = 3;//电机1：反 电机2：反
-                }
-            }
-            else if (speed2 < 0) {
-                speed2 = speed2 * -1;
-                if (speed1 > 0)
-                    Turn = 2;//电机1：正 电机2：反
-                else {
-                    speed1 = speed1 * -1;
-                    Turn = 3;//电机1：反 电机2：反
-                }
-            }
-
             buf[0] = 0x58;      //标志位
-            buf[1] = Turn;
-            buf[2] = speed1;
-            buf[3] = speed2;
-            buf[4] = ports;
+            buf[1] = direction
+            buf[2] = speed
+            buf[3] = 0;
+            buf[4] = port;
             serial.writeBuffer(buf);
             serial.writeString(NEW_LINE);
-
-            if (Features == 3)          //时间
-            { 
-                time2 = content * 1000;
-                basic.pause(time2);
-                
-                buf2[0] = 0x58;         //标志位
-                buf2[1] = 4;            //停止单电机
-                buf2[2] = 0;
-                buf2[3] = 0;
-                buf2[4] = port;
-                serial.writeBuffer(buf2);
-                serial.writeString(NEW_LINE);
-
-            }
-
         }
 
         if(Features == 2)                   //停止
         { 
 
             buf[0] = 0x58;           //标志位
-            buf[1] = 4;              //停止单电机
-            buf[2] = 0;
-            buf[3] = 0;
+            buf[1] = direction;              //停止单电机
+            buf[2] = speed
+            buf[3] = 0x00
             buf[4] = port;
             serial.writeBuffer(buf);
             serial.writeString(NEW_LINE);
             
         }
 
+        if (Features == 3) {         //时间
+            
+                time2 = content * 1000;
+                //basic.pause(time2);
+                
+                buf2[0] = 0x58;         //标志位
+                buf2[1] = direction;            //停止单电机
+                buf2[2] = speed;
+                buf2[3] = time2;
+                buf2[4] = port;
+                serial.writeBuffer(buf2);
+                serial.writeString(NEW_LINE);
+
+            
+
+        }
+
+
         if (Features == 4)                       //圈数
         {
             num_of_turn = content;
 
-            if (num_of_turn > 0xff || num_of_turn < 0)
-                num_of_turn = 0;
-
-            if (speed > 0)
-                turn = 0;       //正转
-            else if (speed < 0) {
-                turn = 1;       //反转
-                speed = -speed;
-            }
-                
-
             buf3[0] = 0x59;      //标志位
-            buf3[1] = 0;         //角度高8位
-            buf3[2] = 0;         //角度低8位
-            buf3[3] = turn;      //正反转
-            buf3[4] = port - 1;  //端口
-            buf3[5] = num_of_turn;   //圈数
-            buf3[6] = speed;     //自定义速度
-            buf3[7] = 1;         //0：绝对位置 1：相对位置
+            buf3[1] = 0;        //0：绝对位置 1：相对位置
+            buf3[2] = 0;         //speed&角度
+            buf3[3] = num_of_turn;//圈数
+            buf3[4] = port;  //端口        
             serial.writeBuffer(buf3);
             serial.writeString(NEW_LINE);
         }
@@ -294,41 +258,16 @@ namespace hicbit {
         if(Features == 5)                   //角度
         { 
             angle = content;
-
-            if (angle < 0||speed < 0)
-            {
-                turn = 1;           //反转
-                if(speed > 0 && angle < 0)
-                    angle *= -1;
-                if (speed < 0 && angle < 0) 
-                    turn = 0;
-                if (speed < 0)
-                    speed = -speed;
-            }
-            else if(speed > 0)
-                turn = 0;           //正转
-            
-            if (angle >= 0xff)
-            {
-                angle_H = angle / 0xff;
-                angle_L = angle % 0xff;
-            }
-            else
-                angle_L = angle;
-            
             buf3[0] = 0x59;      //标志位
-            buf3[1] = angle_H;   //角度高8位
-            buf3[2] = angle_L;   //角度低8位
-            buf3[3] = turn;      //正反转
-            buf3[4] = port - 1;  //端口
-            buf3[5] = 0;         //圈数
-            buf3[6] = speed;     //速度
-            buf3[7] = 1;         //0：绝对位置 1：相对位置
+            buf3[1] = 0;        //0：绝对位置 1：相对位置
+            buf3[2] = angle;         //speed&角度
+            buf3[3] = num_of_turn;//圈数
+            buf3[4] = port;  //端口        
             serial.writeBuffer(buf3);
             serial.writeString(NEW_LINE);
         }
 
-        basic.pause(200);
+        basic.pause(100);
     }
 
     /**
