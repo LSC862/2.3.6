@@ -544,13 +544,53 @@ namespace Sensor {
     //% blockID=testBLOCY block="Buzzer port |%port| value |%value|"
     //% weight = 100
     //% value.min=0 value.max=1
-    export function testBLOCY(port:hicbit_Port , value:number):void{
-        
+   export function testBLOCY(port:hicbit_Port , value:number):void{
+        if(port==hicbit_Port.port1)
+        switch(value){
+                case 1:
+                    pins.digitalWritePin(DigitalPin.P1, 1);
+                    break;
+                case 0:
+                    pins.digitalWritePin(DigitalPin.P1, 0);
+                    break;
+                
+        }
+        if(port==hicbit_Port.port2)
+        switch(value)
+        {
+            case 1:
+                pins.digitalWritePin(DigitalPin.P2, 1);
+                break;
+            case 0:
+                pins.digitalWritePin(DigitalPin.P2, 0);
+                break;
+            
+        }
+        if(port==hicbit_Port.port3)
+        switch(value){
+            case 1:
+                pins.digitalWritePin(DigitalPin.P3, 1);
+                break;
+            case 0:
+                pins.digitalWritePin(DigitalPin.P3, 0);
+                break;
+            
+        }
+        if(port==hicbit_Port.port4)
+        switch(value){
+            case 1:
+                pins.digitalWritePin(DigitalPin.P4, 1);
+                break;
+            case 0:
+                pins.digitalWritePin(DigitalPin.P4, 0);
+                break;
+            
+        }
     }
 
      /**
         * Buzzer   weight=100 blockId=Buzzer block="Buzzer set port %port|get %buzzer"
-     */   
+    
     //% weight=100 blockID=Buzzer block="Buzzer|port %port| status|buzzer %buz|"
     export function Buzzer(port:hicbit_Port,buz: buz): void {
         if(port==hicbit_Port.port1)
@@ -595,7 +635,7 @@ namespace Sensor {
             
         }
     }
-
+ */   
     /**
      * Get the line follower sensor port ad value 巡线
      */
