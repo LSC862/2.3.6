@@ -537,9 +537,10 @@ namespace Sensor {
     }
 
 /**
-        * Buzzer   weight=100 blockId=Buzzer block="Buzzer set port %port|get %buzzer"
+        * SET BUZZER   
+	*weight=100 blockId=Buzzer block="Buzzer set port %port|get %buzzer"
      */   
-    //% weight=100 blockId=Buzzer block="Buzzer|port %port| get|value %buz"
+    //% weight=100 blockId=Buzzer block="Buzzer chose|port %port|get %buz"
     export function Buzzer(port:hicbit_Port,buz: buzzer): void {
         if(port==hicbit_Port.port1)
         switch(buz){
@@ -1314,5 +1315,197 @@ namespace Display {
         serial.writeString(NEW_LINE);
         basic.pause(200);
     }
+
+}
+	
+	
+	/**
+ * 自定义图形块
+ */
+//% weight=5 color=#0fbc12 icon="\uf111"
+namespace MPU6050{
+    //	加速度，陀螺仪，磁力 Acceleration, gyroscope, magnetic
+    // 定义MPU6050内部地址
+    //****************************************
+    const   SMPLRT_DIV=		0x19	//陀螺仪采样率，典型值：0x07(125Hz)
+    const	CONFIG=			0x1A	//低通滤波频率，典型值：0x06(5Hz)
+    const	GYRO_CONFIG		=0x1B	//陀螺仪自检及测量范围，典型值：0x18(不自检，2000deg/s)
+    const	ACCEL_CONFIG	=0x1C	//加速计自检、测量范围及高通滤波频率，典型值：0x01(不自检，2G，5Hz)
+    const	ACCEL_XOUT_H	=0x3B	//加速度地址
+    const	ACCEL_XOUT_L	=0x3C
+    const	ACCEL_YOUT_H	=0x3D
+    const	ACCEL_YOUT_L	=0x3E
+    const	ACCEL_ZOUT_H	=0x3F
+    const	ACCEL_ZOUT_L	=0x40
+    const	TEMP_OUT_H		=0x41	//温度地址
+    const	TEMP_OUT_L		=0x42
+
+    const	GYRO_XOUT_H		=0x43	//陀螺仪地址
+    const	GYRO_XOUT_L		=0x44	
+    const	GYRO_YOUT_H		=0x45
+    const	GYRO_YOUT_L		=0x46
+    const	GYRO_ZOUT_H		=0x47
+    const	GYRO_ZOUT_L		=0x48
+
+    const MAG_ADDRESS		=0x0c
+    const MAG_XOUT_H		=0x04		//磁力传感器地址
+    const MAG_XOUT_L		=0x03
+    const MAG_YOUT_H		=0x06
+    const MAG_YOUT_L		=0x05
+    const MAG_ZOUT_H		=0x08
+    const MAG_ZOUT_L		=0x07
+
+    const	PWR_MGMT_1		=0x6B	//电源管理，典型值：0x00(正常启用)
+    const	WHO_AM_I		=0x75	//IIC地址寄存器(默认数值0x68，只读)
+
+
+//****************************
+
+    const	MPU6050_Addr=   0xD0	  //定义器件在IIC总线中的从地址,根据ALT  ADDRESS地址引脚不同修改
+
+
+    export enum MPU6050Result {
+        //% block="G_X"
+        G_X,
+        //% block="G_Y"
+        G_Y,
+        //% block="G_Z"
+        G_Z,
+        //% block="T_T"
+        T_T,
+        //% block="A_X"
+        A_X,
+        //% block="A_Y"
+        A_Y,
+        //% block="A_Z"
+        A_Z
+    }
+
+    function i2cwrite(addr: number, reg: number, value: number) {
+        let buf = pins.createBuffer(2)
+        buf[0] = reg
+        buf[1] = value
+        pins.i2cWriteBuffer(addr, buf)  
+    }
+    //HAL_I2C_Mem_Write(uint16_t DevAddress,  MemAddress,  MemAddSize,  *pData,  Size,  Timeout)
+    function i2cread(addr: number, reg: number) {
+        pins.i2cWriteNumber(addr, reg, NumberFormat.UInt8BE);
+        let val = pins.i2cReadNumber(addr, NumberFormat.UInt8BE);
+        return val;
+    }
+
+    function Init_MPU6050(){
+    /**
+     * 
+     * HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,PWR_MGMT_1,8,(unsigned char*)0X00,8,0XFFFF);
+	    HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,SMPLRT_DIV,8,(unsigned char*)0x07,8,0XFFFF);
+	    HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,CONFIG,8,(unsigned char*)0x06,8,0XFFFF);
+	    HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,GYRO_CONFIG,8,(unsigned char*)0x18,8,0XFFFF);
+	    HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,ACCEL_CONFIG,8,(unsigned char*)0x01,8,0XFFFF);
+     */
+        i2cwrite(MPU6050_Addr,PWR_MGMT_1,0X00)   
+        i2cwrite(MPU6050_Addr,SMPLRT_DIV,0x07)
+        i2cwrite(MPU6050_Addr,CONFIG,0x06)
+        i2cwrite(MPU6050_Addr,GYRO_CONFIG,0x18)
+        i2cwrite(MPU6050_Addr,ACCEL_CONFIG,0X01)
+    }
+
+    /**
+     * read mpu6050 
+     */
+    //% weight=100 blockGap=20 blockId=READ_MPU6050 block="READ MPU6050"
+    export function READ_MPU6050(){
+        Init_MPU6050()
+    /**
+        * /*	读取陀螺仪数据		
+	    //***********************************************************
+	 HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_XOUT_L,8,&BUF0[0],sizeof(BUF0[0]),0XFFFF); 
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_XOUT_H,8,&BUF0[1],sizeof(BUF0[1]),0XFFFF);
+     G_X =	(BUF0[1]<<8)|BUF0[0];
+     G_X =(double)G_X*250/327.68; 						   //读取计算X轴数据
+  
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_YOUT_L,8,&BUF0[2],sizeof(BUF0[2]),0XFFFF); 
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_YOUT_H,8,&BUF0[3],sizeof(BUF0[3]),0XFFFF);
+     G_Y =	(BUF0[3]<<8)|BUF0[2];
+     G_Y =(double)G_Y*250/327.68; 						   //读取计算Y轴数据
+      
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_ZOUT_L,8,&BUF0[4],sizeof(BUF0[4]),0XFFFF); 
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_ZOUT_H,8,&BUF0[5],sizeof(BUF0[5]),0XFFFF);
+     G_Z =	(BUF0[5]<<8)|BUF0[4];
+     G_Z =(double)G_Z*250/327.68; 					       //读取计算Z轴数据
+  
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,TEMP_OUT_H,8,&BUF0[6],sizeof(BUF0[0]),0XFFFF); 
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,TEMP_OUT_L,8,&BUF0[7],sizeof(BUF0[1]),0XFFFF);
+     T_T =(BUF0[7]<<8)|BUF0[6];
+     T_T =(((double) (T_T + 13200)) / 280)-39;// 读取计算出温度
+    */
+        let BUF0 = pins.createBuffer(10)
+        BUF0[0]=i2cread(MPU6050_Addr,GYRO_XOUT_L)
+        BUF0[1]=i2cread(MPU6050_Addr,GYRO_XOUT_H)//X
+        
+        let G_X = (BUF0[1]<<8)|BUF0[0]
+        G_X = G_X*250/327.68
+
+
+        BUF0[2]=i2cread(MPU6050_Addr,GYRO_YOUT_L)
+        BUF0[3]=i2cread(MPU6050_Addr,GYRO_YOUT_L)//Y
+        let G_Y= (BUF0[3]<<8)|BUF0[2]
+        G_Y = G_Y*250/327.68
+
+        BUF0[4]=i2cread(MPU6050_Addr,GYRO_ZOUT_L)
+        BUF0[5]=i2cread(MPU6050_Addr,GYRO_ZOUT_H)//Z
+        let G_Z = (BUF0[5]<<8)|BUF0[4]
+        G_Z = G_Z*250/327.68
+
+        BUF0[6]=i2cread(MPU6050_Addr,TEMP_OUT_H)
+        BUF0[7]=i2cread(MPU6050_Addr,TEMP_OUT_L)//T
+        let T_T = (BUF0[7]<<8)|BUF0[6]
+        T_T = T_T*250/327.68
+
+    //ACCEL_ZOUT_L
+	//*************************************************************
+		/*	读取加速度数据		
+	//***********************************************************
+	 HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_XOUT_L,8,&BUF0[0],sizeof(BUF0[0]),0XFFFF); 
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_XOUT_H,8,&BUF0[1],sizeof(BUF0[1]),0XFFFF);
+    // BUF1[0]=Single_Read(MPU6050_Addr,ACCEL_XOUT_L); 
+    // BUF1[1]=Single_Read(MPU6050_Addr,ACCEL_XOUT_H);
+     A_X =	(BUF1[1]<<8)|BUF1[0];
+     A_X = (double)A_X/163.84; 						   //读取计算X轴数据
+  
+       HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_YOUT_L,8,&BUF0[2],sizeof(BUF0[2]),0XFFFF); 
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_YOUT_H,8,&BUF0[3],sizeof(BUF0[3]),0XFFFF);
+     //BUF1[2]=Single_Read(MPU6050_Addr,ACCEL_YOUT_L);
+     //BUF1[3]=Single_Read(MPU6050_Addr,ACCEL_YOUT_H);
+     A_Y =	(BUF1[3]<<8)|BUF1[2];
+     A_Y = (double)A_Y/163.84; 						   //读取计算Y轴数据
+      
+      HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_ZOUT_L,8,&BUF0[4],sizeof(BUF0[4]),0XFFFF); 
+     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_ZOUT_H,8,&BUF0[5],sizeof(BUF0[5]),0XFFFF);
+     //BUF1[4]=Single_Read(MPU6050_Addr,ACCEL_ZOUT_L);
+     //BUF1[5]=Single_Read(MPU6050_Addr,ACCEL_ZOUT_H);
+     A_Z =	(BUF1[5]<<8)|BUF1[4];
+     A_Z = (double)A_Z/163.84; 					       //读取计算Z轴数据
+      //**************************************************************/
+        BUF0[0]=i2cread(MPU6050_Addr,ACCEL_XOUT_L)
+        BUF0[1]=i2cread(MPU6050_Addr,ACCEL_XOUT_H)//X
+        let A_X = (BUF0[1]<<8)|BUF0[0]
+        A_X = A_X/163.84;
+
+
+        BUF0[2]=i2cread(MPU6050_Addr,ACCEL_YOUT_L)
+        BUF0[3]=i2cread(MPU6050_Addr,ACCEL_YOUT_H)//Y
+        let A_Y= (BUF0[3]<<8)|BUF0[2]
+        A_Y = A_Y/163.84;
+
+        BUF0[4]=i2cread(MPU6050_Addr,ACCEL_ZOUT_L)
+        BUF0[5]=i2cread(MPU6050_Addr,ACCEL_ZOUT_H)//Z
+        let A_Z = (BUF0[5]<<8)|BUF0[4]
+        A_Z = A_Z/163.84; 
+
+     return G_X
+    }
+
+
 
 }
