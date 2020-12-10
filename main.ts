@@ -529,25 +529,25 @@ namespace Sensor {
     }
 
 
-    export enum buzzer {
+     export enum buz {
         //% block="ring"
         ring = 0x01,
         //% block="Not_ringing"
         Not_ringing = 0x02,
     }
 
-/**
-        * SET BUZZER   
-	*weight=100 blockId=Buzzer block="Buzzer set port %port|get %buzzer"
+
+     /**
+        * Buzzer   weight=100 blockId=Buzzer block="Buzzer set port %port|get %buzzer"
      */   
-    //% weight=100 blockId=Buzzer block="Buzzer chose|port %port|get %buz"
-    export function Buzzer(port:hicbit_Port,buz: buzzer): void {
+    //% weight=100 blockID=Buzzer block="Buzzer|port %port| status|buzzer %buz|"
+    export function Buzzer(port:hicbit_Port,buz: buz): void {
         if(port==hicbit_Port.port1)
         switch(buz){
-                case Sensor.buzzer.ring:
+                case Sensor.buz.ring:
                     pins.digitalWritePin(DigitalPin.P1, 1);
                     break;
-                case Sensor.buzzer.Not_ringing:
+                case Sensor.buz.Not_ringing:
                     pins.digitalWritePin(DigitalPin.P1, 0);
                     break;
                 
@@ -555,30 +555,30 @@ namespace Sensor {
         if(port==hicbit_Port.port2)
         switch(buz)
         {
-            case Sensor.buzzer.ring:
+            case Sensor.buz.ring:
                 pins.digitalWritePin(DigitalPin.P2, 1);
                 break;
-            case Sensor.buzzer.Not_ringing:
+            case Sensor.buz.Not_ringing:
                 pins.digitalWritePin(DigitalPin.P2, 0);
                 break;
             
         }
         if(port==hicbit_Port.port3)
         switch(buz){
-            case Sensor.buzzer.ring:
+            case Sensor.buz.ring:
                 pins.digitalWritePin(DigitalPin.P3, 1);
                 break;
-            case Sensor.buzzer.Not_ringing:
+            case Sensor.buz.Not_ringing:
                 pins.digitalWritePin(DigitalPin.P3, 0);
                 break;
             
         }
         if(port==hicbit_Port.port4)
         switch(buz){
-            case Sensor.buzzer.ring:
+            case Sensor.buz.ring:
                 pins.digitalWritePin(DigitalPin.P4, 1);
                 break;
-            case Sensor.buzzer.Not_ringing:
+            case Sensor.buz.Not_ringing:
                 pins.digitalWritePin(DigitalPin.P4, 0);
                 break;
             
