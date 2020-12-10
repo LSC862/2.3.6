@@ -541,7 +541,7 @@ namespace Sensor {
      * @param port [port1,port2,port3,port4] choose ports
      * @param value [0-1] set buzzer open or close
      */
-    //% blockID=Buzzer block="Buzzer port |%port| value |%value|"
+    //% blockID=testBLOCY block="Buzzer port |%port| value |%value|"
     //% weight = 100
     //% value.min=0 value.max=1
     export function testBLOCY(port:hicbit_Port , value:number):void{
