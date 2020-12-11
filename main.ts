@@ -135,11 +135,12 @@ namespace hicbit {
         stop = 0x02,
         //% block="time(s)"
         time = 0x03,
-        //% block="number_of_turns"
+        /*
+	//% block="number_of_turns"
         number_of_turns = 0x04,
         //% block="angle"
         angle = 0x05,
-        
+        */
     }
 
     export enum hicbit_Coded_motor_Port {
@@ -238,7 +239,7 @@ namespace hicbit {
 
         }
 
-
+/*
         if (Features == 4)                       //圈数
         {
             num_of_turn = content;
@@ -262,7 +263,7 @@ namespace hicbit {
             buf3[4] = port;  //端口        
             serial.writeBuffer(buf3);
             serial.writeString(NEW_LINE);
-        }
+        }*/
 
         basic.pause(100);
     }
@@ -359,7 +360,7 @@ namespace hicbit {
             serial.writeString(NEW_LINE);
             
         }
-
+/*
         if (Features == 4)                       //圈数
         {
             num_of_turn = content;
@@ -447,8 +448,8 @@ namespace hicbit {
             serial.writeBuffer(buf3);
             serial.writeString(NEW_LINE);
         }
-
-        basic.pause(200);
+*/
+        basic.pause(100);
 
     }
 
