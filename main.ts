@@ -462,10 +462,10 @@ namespace hicbit {
          let direction: number = 0;
         let buf = pins.createBuffer(5);
 
-        if(speed<0){
+        if(angle<0){
             direction=0x02;
             speed=-speed
-        }else if(speed==0x00){
+        }else if(angle==0x00){
             direction=0x00
             speed=speed
         }
