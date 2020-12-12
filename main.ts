@@ -456,9 +456,9 @@ namespace hicbit {
     /**
     *	Set Coded motor , angle of -360~360, that can control turn.
     */
-    //% weight=97 blockId=hicbit_setCodedmotor block="Set |port %port| motor|angle %angle|and |speed %speed|"
-    //% angle.min=-360 angle.max=360
-    export function hicbit_setCodedmotor(port: hicbit_Coded_motor_Port,angle: number,speed:Coded_motor_speed) {
+    //% weight=97 blockId=hicbit_setCodedmotor block="Set |port %port| motor|angle %angle|"
+    //% angle.min=-255 angle.max=255
+    export function hicbit_setCodedmotor(port: hicbit_Coded_motor_Port,angle: number) {
          let direction: number = 0;
         let buf = pins.createBuffer(5);
 
