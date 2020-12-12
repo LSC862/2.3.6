@@ -464,14 +464,12 @@ namespace hicbit {
 
         if(angle<0){
             direction=0x02;
-            speed=-speed
+
         }else if(angle==0x00){
             direction=0x00
-            speed=speed
         }
         else{
             direction=0x01
-            speed=speed
         }
         
 
@@ -484,7 +482,7 @@ namespace hicbit {
         serial.writeString(NEW_LINE);
 
 
-        basic.pause(100);
+        basic.pause(250);
     }
 
 }
