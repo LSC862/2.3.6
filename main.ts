@@ -453,6 +453,247 @@ namespace hicbit {
 
     }
 
+/**
+ * 
+ * @param port1 
+ * @param speed1 
+ * @param port2 
+ * @param speed2 
+ * @param port3 
+ * @param speed3 
+ * @param Features 
+ * @param content 
+ */
+    //% weight=98 blockId=hicbit_setTripleMotor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| and |port %port3| motor |speed %speed3| |Features %Features|: |%content|"
+    //% speed1.min=-100 speed1.max=100 
+    //% speed2.min=-100 speed2.max=100
+    //% speed3.min=-100 speed3.max=100
+    //% inlineInputMode=inline
+    export function hicbit_setTripleMotor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,Features: hicbit_Features, content: number)
+    {
+        let direction1:number
+        let direction2:number
+        let direciton3:number
+        let buf = pins.createBuffer(12)
+
+        if(speed1>0)
+        {
+            direction1=0x01
+        }else if(speed1<0)
+        {
+            direction1=0x02
+        }else 
+        {
+            direction1=0x00
+        }
+
+        if(speed2>0)
+        {
+            direction2=0x01
+        }else if(speed2<0)
+        {
+            direction2=0x02
+        }else 
+        {
+            direction2=0x00
+        }
+        if(speed3>0)
+        {
+            direciton3=0x01
+        }else if(speed3<0)
+        {
+            direciton3=0x02
+        }else 
+        {
+            direciton3=0x00
+        }
+
+
+        if(Features==1)
+        {
+             buf[0] = 0x6E //控制位
+             buf[1] = direction1
+             buf[2] = port1 
+             buf[3] = speed1 //速度or角度
+             buf[4] = direction2 
+             buf[5] = port2
+             buf[6] = speed2 // 速度or角度
+             buf[7] = direciton3
+             buf[8] = port3
+             buf[9] = speed3
+             buf[10] = content
+             buf[11] = 0x00 // 0 速度控制 ； // 1.停止//2.时间  // 时间
+
+        }
+        if(Features==2)
+        {
+             content*=1000
+             buf[0] = 0x6E //控制位
+             buf[1] = direction1
+             buf[2] = port1 
+             buf[3] = speed1 //速度or角度
+             buf[4] = direction2 
+             buf[5] = port2
+             buf[6] = speed2 // 速度or角度
+             buf[7] = direciton3
+             buf[8] = port3
+             buf[9] = speed3
+             buf[10] = content
+             buf[11] = 0x01 // 0 速度控制 ； // 1.停止//2.时间  // 时间
+
+        }
+        if(Features==3)
+        {
+            buf[0] = 0x6E //控制位
+             buf[1] = direction1
+             buf[2] = port1 
+             buf[3] = speed1 //速度or角度
+             buf[4] = direction2 
+             buf[5] = port2
+             buf[6] = speed2 // 速度or角度
+             buf[7] = direciton3
+             buf[8] = port3
+             buf[9] = speed3
+             buf[10] = content
+             buf[11] = 0x02 // 0 速度控制 ； // 1.停止//2.时间  // 时间
+        }
+
+        basic.pause(100);
+    }
+
+    /**
+     * 
+     * @param port1 
+     * @param speed1 
+     * @param port2 
+     * @param speed2 
+     * @param port3 
+     * @param speed3 
+     * @param port4 
+     * @param speed4 
+     * @param Features 
+     * @param content 
+     */
+    //% weight=98 blockId=hicbit_set4Motor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| and |port %port3| motor |speed %speed3| and |port %port4| motor |speed %speed4| |Features %Features|: |%content|"
+    //% speed1.min=-100 speed1.max=100 
+    //% speed2.min=-100 speed2.max=100
+    //% speed3.min=-100 speed3.max=100
+    //% speed4.min=-100 speed4.max=100
+    //% inlineInputMode=inline
+    export function hicbit_set4Motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,port4:hicbit_Port,speed4:number,Features: hicbit_Features, content: number)
+    {
+        let direction1:number
+        let direction2:number
+        let direciton3:number
+        let direciton4:number
+        let buf = pins.createBuffer(15)
+
+        if(speed1>0)
+        {
+            direction1=0x01
+        }else if(speed1<0)
+        {
+            direction1=0x02
+        }else 
+        {
+            direction1=0x00
+        }
+
+        if(speed2>0)
+        {
+            direction2=0x01
+        }else if(speed2<0)
+        {
+            direction2=0x02
+        }else 
+        {
+            direction2=0x00
+        }
+        if(speed3>0)
+        {
+            direciton3=0x01
+        }else if(speed3<0)
+        {
+            direciton3=0x02
+        }else 
+        {
+            direciton3=0x00
+        }
+
+        if(speed4>0)
+        {
+            direciton4=0x01
+        }else if(speed4<0)
+        {
+            direciton4=0x02
+        }else 
+        {
+            direciton4=0x00
+        }
+
+
+
+        if(Features==1)
+        {
+             buf[0] = 0x6F //控制位
+             buf[1] = direction1
+             buf[2] = port1 
+             buf[3] = speed1 //速度or角度
+             buf[4] = direction2 
+             buf[5] = port2
+             buf[6] = speed2 // 速度or角度
+             buf[7] = direciton3
+             buf[8] = port3
+             buf[9] = speed3
+             buf[10] = direciton4
+             buf[11] = port4
+             buf[12] = speed4
+             buf[13] = content
+             buf[14] = 0x00 // 0 速度控制 ； // 1.停止//2.时间  // 时间
+
+        }
+        if(Features==2)
+        {
+             buf[0] = 0x6F //控制位
+             buf[1] = direction1
+             buf[2] = port1 
+             buf[3] = speed1 //速度or角度
+             buf[4] = direction2 
+             buf[5] = port2
+             buf[6] = speed2 // 速度or角度
+             buf[7] = direciton3
+             buf[8] = port3
+             buf[9] = speed3
+             buf[10] = direciton4
+             buf[11] = port4
+             buf[12] = speed4
+             buf[13] = content
+             buf[14] = 0x01 // 0 速度控制 ； // 1.停止//2.时间  // 时间
+
+        }
+        if(Features==3)
+        {
+
+             buf[0] = 0x6F //控制位
+             buf[1] = direction1
+             buf[2] = port1 
+             buf[3] = speed1 //速度or角度
+             buf[4] = direction2 
+             buf[5] = port2
+             buf[6] = speed2 // 速度or角度
+             buf[7] = direciton3
+             buf[8] = port3
+             buf[9] = speed3
+             buf[10] = direciton4
+             buf[11] = port4
+             buf[12] = speed4
+             buf[13] = content
+             buf[14] = 0x02 // 0 速度控制 ； // 1.停止//2.时间  // 时间
+        }
+        basic.pause(100);
+
+    }
+	
     /**
     *	Set Coded motor , angle of -360~360, that can control turn.
     */
