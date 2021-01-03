@@ -697,11 +697,12 @@ namespace hicbit {
     /**
     *	Set Coded motor , angle of -360~360, that can control turn.
     */
-    //% weight=97 blockId=hicbit_setCodedmotor block="Set |port %port| motor|angle %angle|"
-    //% angle.min=-255 angle.max=255
-    export function hicbit_setCodedmotor(port: hicbit_Coded_motor_Port,angle: number) {
-         let direction: number = 0;
-        let buf = pins.createBuffer(5);
+    //% weight=97 blockId=hicbit_setCodedmotor block="Set |port %port| motor|angle %angle| speed|speed %speed|"
+    //% angle.min=-360 angle.max=360
+    export function hicbit_setCodedmotor(port: hicbit_Coded_motor_Port,angle: number,speed:number) {
+        let direction: number = 0;
+	let angle_H, angle_L; 
+        let buf = pins.createBuffer(6);
 
         if(angle<0){
             direction=0x02;
@@ -713,12 +714,16 @@ namespace hicbit {
             direction=0x01
         }
         
+	angle_H = angle / 0xff;
+        angle_L = angle % 0xff;
+	
 
         buf[0] = 0x59;      //标志位
         buf[1] = direction
-        buf[2] = angle
-        buf[3] = 0x00;
+        buf[2] = angle_H;
+        buf[3] = angle_L;
         buf[4] = port;
+	buf[5] = speed;
         serial.writeBuffer(buf);
         serial.writeString(NEW_LINE);
 
