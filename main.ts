@@ -274,8 +274,8 @@ namespace hicbit {
     *   @param port2 The second port, eg: hicbit.hicbit_Port.port2
     */
     //% weight=98 blockId=hicbit_set_Dual_motor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| |Features %Features|: |%content|"
-    //% speed1.min=-255 speed1.max=255 
-    //% speed2.min=-255 speed2.max=255 
+    //% speed1.min=-100 speed1.max=100 
+    //% speed2.min=-100 speed2.max=100 
     //% inlineInputMode=inline
     export function hicbit_set_Dual_motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, Features: hicbit_Features, content: number) {
         //启动变量
