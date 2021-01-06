@@ -224,7 +224,7 @@ namespace hicbit {
 
         if (Features == 3) {         //时间
             
-                time2 = content * 1000;
+                time2 = content ;
                 //basic.pause(time2);
                 
                 buf2[0] = 0x58;         //标志位
