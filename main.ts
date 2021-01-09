@@ -727,8 +727,9 @@ namespace hicbit {
         serial.writeBuffer(buf);
         serial.writeString(NEW_LINE);
 	while(1){
-		if(serial.readString() is not null)
+		if(serial.readString()!=0){
 			break;
+		}
 	}
 
         basic.pause(250);
