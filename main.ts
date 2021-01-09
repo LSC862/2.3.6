@@ -206,8 +206,7 @@ namespace hicbit {
             buf[3] = 0x00;
             buf[4] = port;
             serial.writeBuffer(buf);
-            serial.writeString(NEW_LINE);
-		while(serial.rad)
+
         }
 
         if(Features == 2)                   //停止
