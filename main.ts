@@ -21,7 +21,7 @@ namespace hicbit_control {
     */
     //% weight=100 blockGap=20 blockId=hicbit_Init block="Initialize hicbit"
     export function hicbit_Init() {
-        let buf = pins.createBuffer(1);
+        let buf = pins.createBuffer(30);
         led.enable(false);
 
         serial.redirect(
@@ -34,8 +34,13 @@ namespace hicbit_control {
         });
 
         buf[0] = 0x0F;
+	buf[1] = 0x0d;
+	buf[2] = 0x0d;
+	buf[3] = 0x0c;
+	buf[4] = 0xcc;
         serial.writeBuffer(buf);
-        serial.writeString(Display.NEW_LINE);
+        
+	//serial.writeString(Display.NEW_LINE);
         basic.pause(500);
         Display.Clearscreen();
         basic.pause(500);
