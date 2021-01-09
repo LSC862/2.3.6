@@ -702,6 +702,7 @@ namespace hicbit {
     export function hicbit_setCodedmotor(port: hicbit_Coded_motor_Port,angle: number,speed:number) {
         let direction: number = 0;
 	let angle_H, angle_L; 
+	let status;
         let buf = pins.createBuffer(6);
 
         if(angle<0){
@@ -727,10 +728,11 @@ namespace hicbit {
         serial.writeBuffer(buf);
         serial.writeString(NEW_LINE);
 	while(1){
-		if(serial.readString()!=0){
-			break;
-		}
-	}
+        status = serial.readString();//获得stm32 发送的数据
+        if(serial.readLine())//判断数据的长度是否不等于0，说明有数据
+            break;
+		
+    }
 
         basic.pause(250);
     }
