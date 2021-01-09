@@ -207,6 +207,7 @@ namespace hicbit {
             buf[4] = port;
             serial.writeBuffer(buf);
             serial.writeString(NEW_LINE);
+		while(serial.rad)
         }
 
         if(Features == 2)                   //停止
@@ -726,7 +727,10 @@ namespace hicbit {
 	buf[5] = speed;
         serial.writeBuffer(buf);
         serial.writeString(NEW_LINE);
-
+	while(1){
+		if(serial.readString() is not null)
+			break;
+	}
 
         basic.pause(250);
     }
