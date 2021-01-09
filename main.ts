@@ -172,15 +172,15 @@ namespace hicbit {
     export function hicbit_set_Single_motor(port: hicbit_Port, speed: number, Features: hicbit_Features, content: number) {
                //启动变量
         let direction: number = 0;
-        let buf = pins.createBuffer(5);
+        let buf = pins.createBuffer(255);
 
         //时间变量
         let time2: number = 0;
-        let buf2 = pins.createBuffer(5);
+        let buf2 = pins.createBuffer(255);
 
         //角度变量
         let angle: number = 0 ;     //角度值
-        let buf3 = pins.createBuffer(8);
+        let buf3 = pins.createBuffer(255);
 
         //圈数变量
         let num_of_turn: number = 0 ;
@@ -206,6 +206,7 @@ namespace hicbit {
             buf[3] = 0x00;
             buf[4] = port;
             serial.writeBuffer(buf);
+	    //serial.writeString(NEW_LINE);
 
         }
 
@@ -218,7 +219,7 @@ namespace hicbit {
             buf[3] = 0x00
             buf[4] = port;
             serial.writeBuffer(buf);
-            serial.writeString(NEW_LINE);
+            //serial.writeString(NEW_LINE);
             
         }
 
@@ -233,38 +234,8 @@ namespace hicbit {
                 buf2[3] = time2;
                 buf2[4] = port;
                 serial.writeBuffer(buf2);
-                serial.writeString(NEW_LINE);
-
-            
-
+                //serial.writeString(NEW_LINE); 
         }
-
-/*
-        if (Features == 4)                       //圈数
-        {
-            num_of_turn = content;
-
-            buf3[0] = 0x59;      //标志位
-            buf3[1] = 0;        //0：绝对位置 1：相对位置
-            buf3[2] = 0;         //speed&角度
-            buf3[3] = num_of_turn;//圈数
-            buf3[4] = port;  //端口        
-            serial.writeBuffer(buf3);
-            serial.writeString(NEW_LINE);
-        }
-
-        if(Features == 5)                   //角度
-        { 
-            angle = content;
-            buf3[0] = 0x59;      //标志位
-            buf3[1] = 0;        //0：绝对位置 1：相对位置
-            buf3[2] = angle;         //speed&角度
-            buf3[3] = num_of_turn;//圈数
-            buf3[4] = port;  //端口        
-            serial.writeBuffer(buf3);
-            serial.writeString(NEW_LINE);
-        }*/
-
         basic.pause(100);
     }
 
