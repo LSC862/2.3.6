@@ -53,11 +53,13 @@ namespace hicbit_control {
     /**
     * Get the handle command.
     */
+	/*
     function getHandleCmd() {
         let charStr: string = serial.readString();
         handleCmd = handleCmd.concat(charStr);
         handleCmd = "";
     }
+	*/
 
     /**
      * Pause for the specified time in seconds
