@@ -29,9 +29,9 @@ namespace hicbit_control {
             SerialPin.P12,
             BaudRate.BaudRate115200);
 
-        basic.forever(() => {
+        /*basic.forever(() => {
             getHandleCmd();
-        });
+        });*/
 
         buf[0] = 0x0F;
 	buf[1] = 0x0d;
@@ -48,7 +48,7 @@ namespace hicbit_control {
         //basic.pause(500);
     }
 
-    let handleCmd: string = "";
+    //let handleCmd: string = "";
     
     /**
     * Get the handle command.
