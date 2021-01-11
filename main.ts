@@ -172,7 +172,8 @@ namespace hicbit {
     //% weight=99 blockId=hicbit_set_Single_motor block="Set |port %port| motor|speed %speed| |Features %Features|: |%content|"
     //% speed.min=-100 speed.max=100 
     //% inlineInputMode=inline
-    export function hicbit_set_Single_motor(port: hicbit_Port, speed: number, Features: hicbit_Features, content: number) {
+    export function hicbit_set_Single_motor(port: hicbit_Port, speed: number, Features: hicbit_Features, content: number) 
+    {
                //启动变量
         let direction: number = 0;
         let buf = pins.createBuffer(30);
@@ -1392,14 +1393,14 @@ namespace Display {
         */
     //% weight=100 blockId=Clearscreen block="Clear screen"
     export function Clearscreen(): void {
-        let buf = pins.createBuffer(255);//清屏
+        let buf = pins.createBuffer(30);//清屏
         buf[0] = 0xDD;
         buf[1] = 9;
-	buf[2] = 0x0d;
-	buf[3] = 0x0a;
+	    buf[2] = 0x0d;
+	    buf[3] = 0x0a;
         serial.writeBuffer(buf);
         //serial.writeString(NEW_LINE);
-        //basic.pause(200);
+        basic.pause(200);
     }
 
     /**
@@ -1485,14 +1486,12 @@ namespace MPU6050{
     const	ACCEL_ZOUT_L	=0x40
     const	TEMP_OUT_H		=0x41	//温度地址
     const	TEMP_OUT_L		=0x42
-
     const	GYRO_XOUT_H		=0x43	//陀螺仪地址
     const	GYRO_XOUT_L		=0x44	
     const	GYRO_YOUT_H		=0x45
     const	GYRO_YOUT_L		=0x46
     const	GYRO_ZOUT_H		=0x47
     const	GYRO_ZOUT_L		=0x48
-
     const MAG_ADDRESS		=0x0c
     const MAG_XOUT_H		=0x04		//磁力传感器地址
     const MAG_XOUT_L		=0x03
@@ -1500,13 +1499,8 @@ namespace MPU6050{
     const MAG_YOUT_L		=0x05
     const MAG_ZOUT_H		=0x08
     const MAG_ZOUT_L		=0x07
-
     const	PWR_MGMT_1		=0x6B	//电源管理，典型值：0x00(正常启用)
     const	WHO_AM_I		=0x75	//IIC地址寄存器(默认数值0x68，只读)
-
-
-//****************************
-
     const	MPU6050_Addr=   0xD0	  //定义器件在IIC总线中的从地址,根据ALT  ADDRESS地址引脚不同修改
 
 
@@ -1562,29 +1556,6 @@ namespace MPU6050{
     //% weight=100 blockGap=20 blockId=READ_MPU6050 block="READ MPU6050"
     export function READ_MPU6050(){
         Init_MPU6050()
-    /**
-        * /*	读取陀螺仪数据		
-	    //***********************************************************
-	 HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_XOUT_L,8,&BUF0[0],sizeof(BUF0[0]),0XFFFF); 
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_XOUT_H,8,&BUF0[1],sizeof(BUF0[1]),0XFFFF);
-     G_X =	(BUF0[1]<<8)|BUF0[0];
-     G_X =(double)G_X*250/327.68; 						   //读取计算X轴数据
-  
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_YOUT_L,8,&BUF0[2],sizeof(BUF0[2]),0XFFFF); 
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_YOUT_H,8,&BUF0[3],sizeof(BUF0[3]),0XFFFF);
-     G_Y =	(BUF0[3]<<8)|BUF0[2];
-     G_Y =(double)G_Y*250/327.68; 						   //读取计算Y轴数据
-      
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_ZOUT_L,8,&BUF0[4],sizeof(BUF0[4]),0XFFFF); 
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,GYRO_ZOUT_H,8,&BUF0[5],sizeof(BUF0[5]),0XFFFF);
-     G_Z =	(BUF0[5]<<8)|BUF0[4];
-     G_Z =(double)G_Z*250/327.68; 					       //读取计算Z轴数据
-  
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,TEMP_OUT_H,8,&BUF0[6],sizeof(BUF0[0]),0XFFFF); 
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,TEMP_OUT_L,8,&BUF0[7],sizeof(BUF0[1]),0XFFFF);
-     T_T =(BUF0[7]<<8)|BUF0[6];
-     T_T =(((double) (T_T + 13200)) / 280)-39;// 读取计算出温度
-    */
         let BUF0 = pins.createBuffer(10)
         BUF0[0]=i2cread(MPU6050_Addr,GYRO_XOUT_L)
         BUF0[1]=i2cread(MPU6050_Addr,GYRO_XOUT_H)//X
@@ -1607,32 +1578,6 @@ namespace MPU6050{
         BUF0[7]=i2cread(MPU6050_Addr,TEMP_OUT_L)//T
         let T_T = (BUF0[7]<<8)|BUF0[6]
         T_T = T_T*250/327.68
-
-    //ACCEL_ZOUT_L
-	//*************************************************************
-		/*	读取加速度数据		
-	//***********************************************************
-	 HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_XOUT_L,8,&BUF0[0],sizeof(BUF0[0]),0XFFFF); 
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_XOUT_H,8,&BUF0[1],sizeof(BUF0[1]),0XFFFF);
-    // BUF1[0]=Single_Read(MPU6050_Addr,ACCEL_XOUT_L); 
-    // BUF1[1]=Single_Read(MPU6050_Addr,ACCEL_XOUT_H);
-     A_X =	(BUF1[1]<<8)|BUF1[0];
-     A_X = (double)A_X/163.84; 						   //读取计算X轴数据
-  
-       HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_YOUT_L,8,&BUF0[2],sizeof(BUF0[2]),0XFFFF); 
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_YOUT_H,8,&BUF0[3],sizeof(BUF0[3]),0XFFFF);
-     //BUF1[2]=Single_Read(MPU6050_Addr,ACCEL_YOUT_L);
-     //BUF1[3]=Single_Read(MPU6050_Addr,ACCEL_YOUT_H);
-     A_Y =	(BUF1[3]<<8)|BUF1[2];
-     A_Y = (double)A_Y/163.84; 						   //读取计算Y轴数据
-      
-      HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_ZOUT_L,8,&BUF0[4],sizeof(BUF0[4]),0XFFFF); 
-     HAL_I2C_Mem_Read(&hi2c1,MPU6050_Addr,ACCEL_ZOUT_H,8,&BUF0[5],sizeof(BUF0[5]),0XFFFF);
-     //BUF1[4]=Single_Read(MPU6050_Addr,ACCEL_ZOUT_L);
-     //BUF1[5]=Single_Read(MPU6050_Addr,ACCEL_ZOUT_H);
-     A_Z =	(BUF1[5]<<8)|BUF1[4];
-     A_Z = (double)A_Z/163.84; 					       //读取计算Z轴数据
-      //**************************************************************/
         BUF0[0]=i2cread(MPU6050_Addr,ACCEL_XOUT_L)
         BUF0[1]=i2cread(MPU6050_Addr,ACCEL_XOUT_H)//X
         let A_X = (BUF0[1]<<8)|BUF0[0]
