@@ -21,7 +21,7 @@ namespace hicbit_control {
     */
     //% weight=100 blockGap=20 blockId=hicbit_Init block="Initialize hicbit"
     export function hicbit_Init() {
-        let buf = pins.createBuffer(30);
+        let buf = pins.createBuffer(255);
         led.enable(false);
 
         serial.redirect(
@@ -38,6 +38,8 @@ namespace hicbit_control {
 	buf[2] = 0x0d;
 	buf[3] = 0x0c;
 	buf[4] = 0xcc;
+	buf[5] = 0x0d;
+	buf[6] = 0x0a;
         serial.writeBuffer(buf);
         
 	//serial.writeString(Display.NEW_LINE);
@@ -177,15 +179,15 @@ namespace hicbit {
     export function hicbit_set_Single_motor(port: hicbit_Port, speed: number, Features: hicbit_Features, content: number) {
                //启动变量
         let direction: number = 0;
-        let buf = pins.createBuffer(30);
+        let buf = pins.createBuffer(255);
 
         //时间变量
         let time2: number = 0;
-        let buf2 = pins.createBuffer(30);
+        let buf2 = pins.createBuffer(255);
 
         //角度变量
         let angle: number = 0 ;     //角度值
-        let buf3 = pins.createBuffer(30);
+        let buf3 = pins.createBuffer(255);
 
         //圈数变量
         let num_of_turn: number = 0 ;
@@ -210,6 +212,8 @@ namespace hicbit {
             buf[2] = speed
             buf[3] = 0x00;
             buf[4] = port;
+	    buf[5] = 0x0d;
+	    buf[6] = 0x0a;
             serial.writeBuffer(buf);
 	    //serial.writeString(NEW_LINE);
 
@@ -223,6 +227,8 @@ namespace hicbit {
             buf[2] = 0x00
             buf[3] = 0x00
             buf[4] = port;
+            buf[5] = 0x0d;
+	    buf[6] = 0x0a;
             serial.writeBuffer(buf);
             //serial.writeString(NEW_LINE);
             
@@ -238,6 +244,8 @@ namespace hicbit {
                 buf2[2] = speed;
                 buf2[3] = time2;
                 buf2[4] = port;
+		buf2[5] = 0x0d;
+		buf2[6] = 0x0a;
                 serial.writeBuffer(buf2);
                 //serial.writeString(NEW_LINE); 
         }
@@ -256,18 +264,18 @@ namespace hicbit {
     export function hicbit_set_Dual_motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, Features: hicbit_Features, content: number) {
         //启动变量
         let Turn: number = 0;
-        let buf = pins.createBuffer(6);
+        let buf = pins.createBuffer(255);
         
         //时间变量
         let time2: number = 0;
-        let buf2 = pins.createBuffer(5);
+        let buf2 = pins.createBuffer(255);
 
         //角度变量
         let angle: number = 0 ;     //角度值
         let angle_H: number = 0;    //角度高8位
         let angle_L: number = 0;    //角度低8位
         let turn: number = 0;
-        let buf3 = pins.createBuffer(10);
+        let buf3 = pins.createBuffer(255);
 
         //圈数变量
         let num_of_turn: number = 0 ;
@@ -305,8 +313,10 @@ namespace hicbit {
             buf[3] = speed1;
             buf[4] = port2;
             buf[5] = speed2;
+	    buf[6] = 0x0d;
+            buf[7] = 0x0a;
             serial.writeBuffer(buf);
-            serial.writeString(NEW_LINE);
+            //serial.writeString(NEW_LINE);
 
             if (Features == 3)          //时间
             { 
@@ -318,8 +328,11 @@ namespace hicbit {
                 buf2[2] = 1;            //区分单电机：0双电机：1
                 buf2[3] = port1;
                 buf2[4] = port2;
-                serial.writeBuffer(buf2);
-                serial.writeString(NEW_LINE);
+                buf2[5] =0x0d;
+		buf2[6] =0x0a;
+		serial.writeBuffer(buf2);
+		
+                //serial.writeString(NEW_LINE);
 
             }
         }
@@ -332,99 +345,10 @@ namespace hicbit {
             buf2[2] = 1;
             buf2[3] = port1;
             buf2[4] = port2;
-            serial.writeBuffer(buf2);
-            serial.writeString(NEW_LINE);
-            
+            buf2[5] = 0x0d;
+            buf2[6] = 0x0a;
+	    serial.writeBuffer(buf2);       
         }
-/*
-        if (Features == 4)                       //圈数
-        {
-            num_of_turn = content;
-
-            if (num_of_turn > 0xff || num_of_turn < 0)
-                num_of_turn = 0;
-
-            if (speed1 < 0) {
-                speed1 = speed1 * -1;
-                if (speed2 > 0)
-                    turn = 1;//电机1：反 电机2：正
-                else {
-                    speed2 = speed2 * -1;
-                    turn = 3;//电机1：反 电机2：反
-                }
-            }
-            else if (speed2 < 0) {
-                speed2 = speed2 * -1;
-                if (speed1 > 0)
-                    turn = 2;//电机1：正 电机2：反
-                else {
-                    speed1 = speed1 * -1;
-                    turn = 3;//电机1：反 电机2：反
-                }
-            }
-                
-            buf3[0] = 0x6E;      //标志位
-            buf3[1] = 0;         //角度高8位
-            buf3[2] = 0;         //角度低8位
-            buf3[3] = turn;      //正反转
-            buf3[4] = port1;     //端口1
-            buf3[5] = speed1;     //自定义速度
-            buf3[6] = port2;     //端口2
-            buf3[7] = speed2;     //自定义速度
-            buf3[8] = num_of_turn;   //圈数
-            buf3[9] = 1;         //0：绝对位置 1：相对位置
-            serial.writeBuffer(buf3);
-            serial.writeString(NEW_LINE);
-        }
-
-        if(Features == 5)                   //角度
-        { 
-            angle = content;
-
-            if (angle < 0)
-                angle = -angle;
-            
-            if (angle >= 0xff)
-            {
-                angle_H = angle / 0xff;
-                angle_L = angle % 0xff;
-            }
-            else
-                angle_L = angle;
-
-            if (speed1 < 0) {
-                speed1 = speed1 * -1;
-                if (speed2 > 0)
-                    turn = 1;//电机1：反 电机2：正
-                else {
-                    speed2 = speed2 * -1;
-                    turn = 3;//电机1：反 电机2：反
-                }
-            }
-            else if (speed2 < 0) {
-                speed2 = speed2 * -1;
-                if (speed1 > 0)
-                    turn = 2;//电机1：正 电机2：反
-                else {
-                    speed1 = speed1 * -1;
-                    turn = 3;//电机1：反 电机2：反
-                }
-            }
-                
-            buf3[0] = 0x6E;      //标志位
-            buf3[1] = angle_H;         //角度高8位
-            buf3[2] = angle_L;         //角度低8位
-            buf3[3] = turn;      //正反转
-            buf3[4] = port1;     //端口1
-            buf3[5] = speed1;     //自定义速度
-            buf3[6] = port2;     //端口2
-            buf3[7] = speed2;     //自定义速度
-            buf3[8] = 0;            //圈数
-            buf3[9] = 1;         //0：绝对位置 1：相对位置
-            serial.writeBuffer(buf3);
-            serial.writeString(NEW_LINE);
-        }
-*/
         basic.pause(100);
 
     }
@@ -450,7 +374,7 @@ namespace hicbit {
         let direction1:number
         let direction2:number
         let direciton3:number
-        let buf = pins.createBuffer(12)
+        let buf = pins.createBuffer(255)
 
         if(speed1>0)
         {
@@ -562,7 +486,7 @@ namespace hicbit {
         let direction2:number
         let direciton3:number
         let direciton4:number
-        let buf = pins.createBuffer(15)
+        let buf = pins.createBuffer(255)
 
         if(speed1>0)
         {
@@ -679,7 +603,7 @@ namespace hicbit {
         let direction: number = 0;
 	let angle_H, angle_L; 
 	let status;
-        let buf = pins.createBuffer(6);
+        let buf = pins.createBuffer(255);
 
         if(angle<0){
             direction=0x02;
@@ -701,12 +625,9 @@ namespace hicbit {
         buf[3] = angle_L;
         buf[4] = port;
 	buf[5] = speed;
+	buf[6] = 0x0d;
+	buf[7] = 0x0a;
         serial.writeBuffer(buf);
-        serial.writeString(NEW_LINE);
-	while(1){
-        status = serial.readString();//获得stm32 发送的数据
-        if(serial.readLine())//判断数据的长度是否不等于0，说明有数据
-            break;
 		
     }
 
@@ -814,55 +735,7 @@ namespace Sensor {
             
         }
     }
-
-     /**
-        * Buzzer   weight=100 blockId=Buzzer block="Buzzer set port %port|get %buzzer"
-    
-    //% weight=100 blockID=Buzzer block="Buzzer|port %port| status|buzzer %buz|"
-    export function Buzzer(port:hicbit_Port,buz: buz): void {
-        if(port==hicbit_Port.port1)
-        switch(buz){
-                case Sensor.buz.ring:
-                    pins.digitalWritePin(DigitalPin.P1, 1);
-                    break;
-                case Sensor.buz.Not_ringing:
-                    pins.digitalWritePin(DigitalPin.P1, 0);
-                    break;
-                
-        }
-        if(port==hicbit_Port.port2)
-        switch(buz)
-        {
-            case Sensor.buz.ring:
-                pins.digitalWritePin(DigitalPin.P2, 1);
-                break;
-            case Sensor.buz.Not_ringing:
-                pins.digitalWritePin(DigitalPin.P2, 0);
-                break;
-            
-        }
-        if(port==hicbit_Port.port3)
-        switch(buz){
-            case Sensor.buz.ring:
-                pins.digitalWritePin(DigitalPin.P3, 1);
-                break;
-            case Sensor.buz.Not_ringing:
-                pins.digitalWritePin(DigitalPin.P3, 0);
-                break;
-            
-        }
-        if(port==hicbit_Port.port4)
-        switch(buz){
-            case Sensor.buz.ring:
-                pins.digitalWritePin(DigitalPin.P4, 1);
-                break;
-            case Sensor.buz.Not_ringing:
-                pins.digitalWritePin(DigitalPin.P4, 0);
-                break;
-            
-        }
-    }
- */   
+ 
     /**
      * Get the line follower sensor port ad value 巡线
      */
@@ -1526,12 +1399,14 @@ namespace Display {
         */
     //% weight=100 blockId=Clearscreen block="Clear screen"
     export function Clearscreen(): void {
-        let buf = pins.createBuffer(2);
+        let buf = pins.createBuffer(255);//清屏
         buf[0] = 0xDD;
         buf[1] = 9;
+	buf[2] = 0x0d;
+	buf[3] = 0x0a;
         serial.writeBuffer(buf);
-        serial.writeString(NEW_LINE);
-        basic.pause(200);
+        //serial.writeString(NEW_LINE);
+        //basic.pause(200);
     }
 
     /**
