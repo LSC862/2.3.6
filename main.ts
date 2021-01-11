@@ -603,7 +603,7 @@ namespace hicbit {
         let direction: number = 0;
 	let angle_H, angle_L; 
 	let status;
-        let buf = pins.createBuffer(255);
+        let buf = pins.createBuffer(30);
 
         if(angle<0){
             direction=0x02;
@@ -628,7 +628,7 @@ namespace hicbit {
 	buf[6] = 0x0d;
 	buf[7] = 0x0a;
         serial.writeBuffer(buf);
-        basic.pause(250);
+        basic.pause(100);//等待串口发送完毕
     }
 
 }
