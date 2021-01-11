@@ -628,9 +628,6 @@ namespace hicbit {
 	buf[6] = 0x0d;
 	buf[7] = 0x0a;
         serial.writeBuffer(buf);
-		
-    }
-
         basic.pause(250);
     }
 
