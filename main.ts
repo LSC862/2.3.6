@@ -21,7 +21,7 @@ namespace hicbit_control {
     */
     //% weight=100 blockGap=20 blockId=hicbit_Init block="Initialize hicbit"
     export function hicbit_Init() {
-        let buf = pins.createBuffer(255);
+        let buf = pins.createBuffer(10);
         led.enable(false);
 
         serial.redirect(
@@ -33,17 +33,11 @@ namespace hicbit_control {
             getHandleCmd();
         });*/
 
-        buf[0] = 0x0F;
-	buf[1] = 0x0d;
-	buf[2] = 0x0d;
-	buf[3] = 0x0c;
-	buf[4] = 0xcc;
-	buf[5] = 0x0d;
-	buf[6] = 0x0a;
+        buf[0] = 0xDD;//地址位::显示器
+	buf[1] = 0x09;//控制位::清空指令；记录LCD显示的数据是在microbit；所以每次启动都会进行一次刷新，再重新写入数据到显示
         serial.writeBuffer(buf);
-        
-	//serial.writeString(Display.NEW_LINE);
-        //basic.pause(500);
+	serial.writeString(Display.NEW_LINE);
+        basic.pause(500);//留给显示器更新的时间
         //Display.Clearscreen();
         //basic.pause(500);
     }
