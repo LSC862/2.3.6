@@ -175,15 +175,15 @@ namespace hicbit {
     export function hicbit_set_Single_motor(port: hicbit_Port, speed: number, Features: hicbit_Features, content: number) {
                //启动变量
         let direction: number = 0;
-        let buf = pins.createBuffer(255);
+        let buf = pins.createBuffer(30);
 
         //时间变量
         let time2: number = 0;
-        let buf2 = pins.createBuffer(255);
+        let buf2 = pins.createBuffer(30);
 
         //角度变量
         let angle: number = 0 ;     //角度值
-        let buf3 = pins.createBuffer(255);
+        let buf3 = pins.createBuffer(30);
 
         //圈数变量
         let num_of_turn: number = 0 ;
