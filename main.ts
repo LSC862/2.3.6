@@ -43,9 +43,9 @@ namespace hicbit_control {
         serial.writeBuffer(buf);
         
 	//serial.writeString(Display.NEW_LINE);
-        basic.pause(500);
-        Display.Clearscreen();
-        basic.pause(500);
+        //basic.pause(500);
+        //Display.Clearscreen();
+        //basic.pause(500);
     }
 
     let handleCmd: string = "";
