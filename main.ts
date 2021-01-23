@@ -598,7 +598,7 @@ namespace hicbit {
  * @param speed 
  * @param bias 
  */
- //% weight=98 blockId=hicbit_setSingleangleMotor block="Set |port %port| motor|angle %angle| speed|speed %speed| bias|bias %bias|"
+ //% weight=98 blockId=hicbit_setSingleangleMotor block="Set |port %port| motor|angle %angle| and|speed %speed| and|bias %bias|"
  //% angle.min=-360 angle.max=360
  //% speed.min=-100 speed.max=100
  //% bias.min=-100 bias.max=100
