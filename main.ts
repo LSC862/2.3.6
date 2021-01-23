@@ -601,6 +601,7 @@ namespace hicbit {
     //% weight=97 blockId=hicbit_setCodedmotor block="Set |port %port| motor|angle %angle| speed|speed %speed| and |bias %bias| "
     //% angle.min=-360 angle.max=360
     //% bias.min=-100 bias.max=100
+    //% inlineInputMode=inline
     export function hicbit_setCodedmotor(port: hicbit_Coded_motor_Port,angle: number,speed:number,bias:number) {
         let direction: number = 0;
 	let angle_H, angle_L; 
