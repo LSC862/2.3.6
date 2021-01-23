@@ -365,7 +365,6 @@ namespace hicbit {
     //% speed1.min=-100 speed1.max=100 
     //% speed2.min=-100 speed2.max=100
     //% speed3.min=-100 speed3.max=100
-    //% inlineInputMode=inline
     export function hicbit_setTripleMotor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,Features: hicbit_Features, content: number)
     {
         let direction1:number
@@ -476,7 +475,6 @@ namespace hicbit {
     //% speed2.min=-100 speed2.max=100
     //% speed3.min=-100 speed3.max=100
     //% speed4.min=-100 speed4.max=100
-    //% inlineInputMode=inline
     export function hicbit_set4Motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,port4:hicbit_Port,speed4:number,Features: hicbit_Features, content: number)
     {
         let direction1:number
