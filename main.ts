@@ -600,9 +600,11 @@ namespace hicbit {
 	* @param bias2
 	*/
 	//% weight=98 blockId=HTMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|"
-	//% angle.min=0
+	//% angle1.min=0
+	//% angle2.min=0
 	//% speed1.min=-100 speed1.max=100
 	//% speed2.min=-100 speed2.max=100
+	//% inlineInputMode=inline
 	export function HTMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number){
 		let direction1:number=0;
 		let direction2:number=0;
@@ -637,9 +639,166 @@ namespace hicbit {
 		buf[12]=0x0a;
 		serial.writeBuffer(buf);
         	basic.pause(100);//等待串口发送完毕
+	}
+
+	
+	/**
+	*
+	* @param port1
+	* @param angle1
+	* @param speed1
+	* @param bias1
+	* @param port2
+	* @param angle2
+	* @param speed2
+	* @param bias2
+	* @param port3
+	* @param angle3
+	* @param speed3
+	* @param bias3
+	*/
+	//% weight=98 blockId=HTreeMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|and |port %port3| motor|angle %angle3|and |speed %speed3|and |bias %bias3|"
+	//% angle1.min=0
+	//% angle2.min=0
+	//% angle3.min=0
+	//% speed1.min=-100 speed1.max=100
+	//% speed2.min=-100 speed2.max=100
+	//% speed3.min=-100 speed3.max=100
+	//% inlineInputMode=inline
+	export function HTreeMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number,port3:hicbit_Port,angle3:number,speed3:number,bias3:number){
+		let direction1:number=0;
+		let direction2:number=0;
+		let direction3:number=0;
+		let angle_H1,angle_L1,angle_H2,angle_L2,angle_H3,angle_L3;
+		let buf=pins.createBuffer(30);
+		angle1+=bias1;
+		angle2+=bias2;
+		angle3+=bias3;
+		if(speed1<0)direction1=0x02;
+		else if(speed1==0)direction1=0x00;
+		else direction1=0x01;
 		
+		if(speed2<0)direction2=0x02;
+		else if(speed2==0)direction2=0x00;
+		else direction2=0x01;
 		
+		if(speed3<0)direction3=0x02;
+		else if(speed3==0)direction3=0x00;
+		else direction3=0x01;
 		
+		angle_H1 = angle1 / 0xff;
+        	angle_L1 = angle1 % 0xff;
+		angle_H2 = angle2 / 0xff;
+        	angle_L2 = angle2 % 0xff;
+		angle_H3 = angle3 / 0xff;
+        	angle_L3 = angle3 % 0xff;
+		
+		buf[0]=0x60;//双角度同步执行
+		buf[1]=port1;
+		buf[2]=direction1;
+		buf[3]=angle_H1;
+		buf[4]=angle_L1;
+		buf[5]=speed1;
+		buf[6]=port2;
+		buf[7]=direction2;
+		buf[8]=angle_H2;
+		buf[9]=angle_L2;
+		buf[10]=speed2;
+		buf[11]=port3;
+		buf[12]=direction3;
+		buf[13]=angle_H3;
+		buf[14]=angle_L3;
+		buf[15]=speed3;
+		buf[16]=0x0d;
+		buf[17]=0x0a;
+		serial.writeBuffer(buf);
+        	basic.pause(100);//等待串口发送完毕
+	}
+	
+	/**
+	*
+	* @param port1
+	* @param angle1
+	* @param speed1
+	* @param bias1
+	* @param port2
+	* @param angle2
+	* @param speed2
+	* @param bias2
+	* @param port3
+	* @param angle3
+	* @param speed3
+	* @param bias3
+	* @param port4
+	* @param angle4
+	* @param speed4
+	* @param bias4
+	*/
+	//% weight=98 blockId=HFMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|and |port %port3| motor|angle %angle3|and |speed %speed3|and |bias %bias3|and |port %port4| motor|angle %angle4|and |speed %speed4|and |bias %bias4|"
+	//% angle1.min=0
+	//% angle2.min=0
+	//% angle3.min=0
+	//% angle4.min=0
+	//% speed4.min=-100 speed4.max=100
+	//% speed1.min=-100 speed1.max=100
+	//% speed2.min=-100 speed2.max=100
+	//% speed3.min=-100 speed3.max=100
+	//% inlineInputMode=inline
+	export function HFMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number,port3:hicbit_Port,angle3:number,speed3:number,bias3:number,port4:hicbit_Port,angle4:number,speed4:number,bias4:number){
+		let direction1:number=0;
+		let direction2:number=0;
+		let direction3:number=0;
+		let direction4:number=0;
+		let angle_H1,angle_L1,angle_H2,angle_L2,angle_H3,angle_L3,angle_H4,angle_L4;
+		let buf=pins.createBuffer(30);
+		angle1+=bias1;
+		angle2+=bias2;
+		angle3+=bias3;
+		angle4+=bias4;
+		if(speed1<0)direction1=0x02;
+		else if(speed1==0)direction1=0x00;
+		else direction1=0x01;
+		
+		if(speed2<0)direction2=0x02;
+		else if(speed2==0)direction2=0x00;
+		else direction2=0x01;
+		
+		if(speed3<0)direction3=0x02;
+		else if(speed3==0)direction3=0x00;
+		else direction3=0x01;
+		
+		angle_H1 = angle1 / 0xff;
+        	angle_L1 = angle1 % 0xff;
+		angle_H2 = angle2 / 0xff;
+        	angle_L2 = angle2 % 0xff;
+		angle_H3 = angle3 / 0xff;
+        	angle_L3 = angle3 % 0xff;
+		
+		buf[0]=0x62;//双角度同步执行
+		buf[1]=port1;
+		buf[2]=direction1;
+		buf[3]=angle_H1;
+		buf[4]=angle_L1;
+		buf[5]=speed1;
+		buf[6]=port2;
+		buf[7]=direction2;
+		buf[8]=angle_H2;
+		buf[9]=angle_L2;
+		buf[10]=speed2;
+		buf[11]=port3;
+		buf[12]=direction3;
+		buf[13]=angle_H3;
+		buf[14]=angle_L3;
+		buf[15]=speed3;
+		buf[16]=port4;
+		buf[17]=direction4;
+		buf[18]=angle_H4;
+		buf[19]=angle_L4;
+		buf[20]=speed4;
+		buf[21]=0x0d;
+		buf[22]=0x0a;
+		serial.writeBuffer(buf);
+        	basic.pause(100);//等待串口发送完毕
 	}
 	
 /**
