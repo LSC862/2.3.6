@@ -603,7 +603,7 @@ namespace hicbit {
 	//% angle.min=0
 	//% speed1.min=-100 speed1.max=100
 	//% speed2.min=-100 speed2.max=100
-	export function HTMAC(port1:hicbit_Code_motor_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Code_motor_Port,angle2:number,speed2:number,bias2:number){
+	export function HTMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number){
 		let direction1:number=0;
 		let direction2:number=0;
 		let angle_H1,angle_L1,angle_H2,angle_L2;
