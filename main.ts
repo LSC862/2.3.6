@@ -588,6 +588,59 @@ namespace hicbit {
         basic.pause(100);
 
     }
+	/**
+	*
+	* @param port1
+	* @param angle1
+	* @param speed1
+	* @param bias1
+	* @param port2
+	* @param angle2
+	* @param speed2
+	* @param bias2
+	*/
+	//% weight=98 blockId=HTMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|"
+	//% angle.min=0
+	//% speed1.min=-100 speed1.max=100
+	//% speed2.min=-100 speed2.max=100
+	export function HTMAC(port1:hicbit_Code_motor_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Code_motor_Port,angle2:number,speed2:number,bias2:number){
+		let direction1:number=0;
+		let direction2:number=0;
+		let angle_H1,angle_L1,angle_H2,angle_L2;
+		let buf=pins.createBuffer(30);
+		angle1+=bias1;
+		angle2+=bias2;
+		if(speed1<0)direction1=0x02;
+		else if(speed1==0)direction1=0x00;
+		else direction1=0x01;
+		
+		if(speed2<0)direction2=0x02;
+		else if(speed2==0)direction2=0x00;
+		else direction2=0x01;
+		angle_H1 = angle1 / 0xff;
+        	angle_L1 = angle1 % 0xff;
+		angle_H2 = angle2 / 0xff;
+        	angle_L2 = angle2 % 0xff;
+		
+		buf[0]=0x61;//双角度同步执行
+		buf[1]=port1;
+		buf[2]=direction1;
+		buf[3]=angle_H1;
+		buf[4]=angle_L1;
+		buf[5]=speed1;
+		buf[6]=port2;
+		buf[7]=direction2;
+		buf[8]=angle_H2;
+		buf[9]=angle_L2;
+		buf[10]=speed2;
+		buf[11]=0x0d;
+		buf[12]=0x0a;
+		serial.writeBuffer(buf);
+        	basic.pause(100);//等待串口发送完毕
+		
+		
+		
+	}
 	
 /**
  * 
