@@ -1686,8 +1686,9 @@ namespace Display {
 	    buf[2] = 0x0d;
 	    buf[3] = 0x0a;
         serial.writeBuffer(buf);
-        //serial.writeString(NEW_LINE);
-        basic.pause(200);
+        while (serial.readLine().includes("ack")) {
+			break;
+		}
     }
 
     /**
@@ -1747,7 +1748,9 @@ namespace Display {
         }
         serial.writeString(text2);
         serial.writeString(NEW_LINE);
-        basic.pause(200);
+	    while (serial.readLine().includes("ack")) {
+			break;
+		}
     }
 
 }
