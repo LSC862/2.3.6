@@ -265,7 +265,7 @@ namespace hicbit {
 	buf[6]=speed2;
 	buf[7]=0x0d;
 	buf[8]=0x0a;
-	serial.writeBuffer(buf1);
+	serial.writeBuffer(buf);
 
     
 	    
