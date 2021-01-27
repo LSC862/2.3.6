@@ -526,7 +526,7 @@ namespace hicbit {
         let angle_L: number = 0;    //角度低8位
         let turn: number = 0;
         let buf = pins.createBuffer(8);
-
+	let rxbuf = "";
         if (angle < 0)
         {
             turn = 1;           //反转
@@ -553,7 +553,9 @@ namespace hicbit {
         buf[7] = 0;         //0：绝对位置 1：相对位置
         serial.writeBuffer(buf);
         serial.writeString(NEW_LINE);
-
+	while (serial.readLine().includes("ack")) {
+    		break;
+    }
         basic.pause(200);
     }
 
