@@ -37,7 +37,10 @@ namespace hicbit_control {
 	buf[1] = 0x09;//控制位::清空指令；记录LCD显示的数据是在microbit；所以每次启动都会进行一次刷新，再重新写入数据到显示
         serial.writeBuffer(buf);
 	serial.writeString(Display.NEW_LINE);
-        basic.pause(500);//留给显示器更新的时间
+	while (serial.readLine().includes("ack")) {
+    		break;	
+    }
+        //basic.pause(500);//留给显示器更新的时间
         //Display.Clearscreen();
         //basic.pause(500);
     }
@@ -246,6 +249,9 @@ namespace hicbit {
                 serial.writeBuffer(buf2);
                 //serial.writeString(NEW_LINE); 
         }
+	    while (serial.readLine().includes("ack")) {
+    			break;	
+    }
         basic.pause(100);
     }
 
@@ -293,6 +299,9 @@ namespace hicbit {
             serial.writeBuffer(buf);
 	 
 	 }
+	    while (serial.readLine().includes("ack")) {
+    		break;	
+    }
         basic.pause(100);
 
     }
@@ -404,6 +413,9 @@ namespace hicbit {
 	    buf[12]=0x0d;
 	    buf[13]=0x0a;
 	serial.writeBuffer(buf);
+	    while (serial.readLine().includes("ack")) {
+    			break;	
+    }
         basic.pause(100);
     }
 
@@ -539,6 +551,9 @@ namespace hicbit {
 	    buf[15]=0x0d;
 	    buf[16]=0x0a;
 	    serial.writeBuffer(buf);
+	    while (serial.readLine().includes("ack")) {
+    			break;
+    }
         basic.pause(100);
 
     }
@@ -592,6 +607,9 @@ namespace hicbit {
 		buf[11]=0x0d;
 		buf[12]=0x0a;
 		serial.writeBuffer(buf);
+		while (serial.readLine().includes("ack")) {
+    			break;	
+    }
         	basic.pause(100);//等待串口发送完毕
 	}
 
@@ -666,6 +684,9 @@ namespace hicbit {
 		buf[16]=0x0d;
 		buf[17]=0x0a;
 		serial.writeBuffer(buf);
+		while (serial.readLine().includes("ack")) {
+    		break;
+    }	
         	basic.pause(100);//等待串口发送完毕
 	}
 	
@@ -752,6 +773,9 @@ namespace hicbit {
 		buf[21]=0x0d;
 		buf[22]=0x0a;
 		serial.writeBuffer(buf);
+		while (serial.readLine().includes("ack")) {
+    			break;	
+    }
         	basic.pause(100);//等待串口发送完毕
 	}
 	
@@ -836,6 +860,9 @@ namespace hicbit {
 	buf[6] = 0x0d;
 	buf[7] = 0x0a;
         serial.writeBuffer(buf);
+	    while (serial.readLine().includes("ack")) {
+    		break;	
+    }
         basic.pause(100);//等待串口发送完毕
     }
 
