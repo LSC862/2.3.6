@@ -23,7 +23,7 @@ namespace hicbit_control {
     export function hicbit_Init() {
         let buf = pins.createBuffer(10);
         led.enable(false);
-
+	
         serial.redirect(
             SerialPin.P8,
             SerialPin.P12,
@@ -32,13 +32,13 @@ namespace hicbit_control {
         /*basic.forever(() => {
             getHandleCmd();
         });*/
-
+        basic.pause(5000);
         buf[0] = 0xDD;//地址位::显示器
 	buf[1] = 0x09;//控制位::清空指令；记录LCD显示的数据是在microbit；所以每次启动都会进行一次刷新，再重新写入数据到显示
         buf[2] = 0x0d;
 	buf[3] = 0x0a;
 	serial.writeBuffer(buf);
-        while (serial.readLine().includes("ack")) {
+        while (serial.readLine().includes("DDack")) {
 		break;
 		}
     }
@@ -228,7 +228,7 @@ namespace hicbit {
 	    buf[6] = 0x0a;
             serial.writeBuffer(buf);          
         }
-	    while (serial.readLine().includes("ack")) {
+	    while (serial.readLine().includes("58ack")) {
 			break;
 		}	
 
@@ -270,7 +270,7 @@ namespace hicbit {
 
     
 	    
-	    while (serial.readLine().includes("ack")) {
+	    while (serial.readLine().includes("6Dack")) {
 			break;
 		}
         basic.pause(100);
@@ -338,7 +338,7 @@ namespace hicbit {
 		
         if(Features==2){speed1=speed2=speed3=0;}
         
-             buf[0] = 0x6E //控制位
+             buf[0] = 0x6e //控制位
              buf[1] = direction1
              buf[2] = port1 
              buf[3] = speed1 //速度or角度
@@ -351,7 +351,7 @@ namespace hicbit {
              buf[10] = 0x0d
              buf[11] = 0x0a 
 	     serial.writeBuffer(buf);   
-		while (serial.readLine().includes("ack")) {
+		while (serial.readLine().includes("6Eack")) {
 			break;
 		}
     }
@@ -434,7 +434,7 @@ namespace hicbit {
 
         if(Features==2){speed1=speed2=speed3=speed4=0;}
         
-             buf[0] = 0x6F //控制位
+             buf[0] = 0x6f //控制位
              buf[1] = direction1
              buf[2] = port1 
              buf[3] = speed1 //速度or角度
@@ -454,7 +454,7 @@ namespace hicbit {
  
 
 	    
-	    while (serial.readLine().includes("ack")) {
+	    while (serial.readLine().includes("6Fack")) {
 			break;
 		}
 
@@ -511,7 +511,7 @@ namespace hicbit {
 		buf[12]=0x0a;
 		serial.writeBuffer(buf);
 		
-		while (serial.readLine().includes("ack")) {
+		while (serial.readLine().includes("61ack")) {
 			break;
 		}
 	}
@@ -587,7 +587,7 @@ namespace hicbit {
 		buf[16]=0x0d;
 		buf[17]=0x0a;
 		serial.writeBuffer(buf);
-		while (serial.readLine().includes("ack")) {
+		while (serial.readLine().includes("60ack")) {
 			break;
 		}
         	basic.pause(100);//等待串口发送完毕
@@ -676,7 +676,7 @@ namespace hicbit {
 		buf[21]=0x0d;
 		buf[22]=0x0a;
 		serial.writeBuffer(buf);
-		while (serial.readLine().includes("ack")) {
+		while (serial.readLine().includes("62ack")) {
 			break;
 		}
         	basic.pause(100);//等待串口发送完毕
@@ -723,7 +723,7 @@ namespace hicbit {
 	buf[6] = 0x0d;
 	buf[7] = 0x0a;
         serial.writeBuffer(buf);
-	 while (serial.readLine().includes("ack")) {
+	 while (serial.readLine().includes("59ack")) {
 			break;
 		}
         
@@ -1502,7 +1502,7 @@ namespace Display {
 	    buf[2] = 0x0d;
 	    buf[3] = 0x0a;
         serial.writeBuffer(buf);
-        while (serial.readLine().includes("ack")) {
+        while (serial.readLine().includes("DDack")) {
 			break;
 		}
     }
@@ -1564,7 +1564,7 @@ namespace Display {
         }
         serial.writeString(text2);
         serial.writeString(NEW_LINE);
-	    while (serial.readLine().includes("ack")) {
+	    while (serial.readLine().includes("DDack")) {
 			break;
 		}
     }
