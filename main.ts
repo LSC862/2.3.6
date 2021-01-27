@@ -34,13 +34,10 @@ namespace hicbit_control {
         });*/
 
         buf[0] = 0xDD;//地址位::显示器
-	buf[1] = 0x09;//控制位::清空指令；记录LCD显示的数据是在microbit；所以每次启动都会进行一次刷新，再重新写入数据到显示
+    buf[1] = 0x09;//控制位::清空指令；记录LCD显示的数据是在microbit；所以每次启动都会进行一次刷新，再重新写入数据到显示
         serial.writeBuffer(buf);
-	serial.writeString(Display.NEW_LINE);
-	while (serial.readLine().includes("ack")) {
-    		break;	
-    }
-        //basic.pause(500);//留给显示器更新的时间
+    serial.writeString(Display.NEW_LINE);
+        basic.pause(500);//留给显示器更新的时间
         //Display.Clearscreen();
         //basic.pause(500);
     }
@@ -50,13 +47,13 @@ namespace hicbit_control {
     /**
     * Get the handle command.
     */
-	/*
+    /*
     function getHandleCmd() {
         let charStr: string = serial.readString();
         handleCmd = handleCmd.concat(charStr);
         handleCmd = "";
     }
-	*/
+    */
 
     /**
      * Pause for the specified time in seconds
@@ -142,7 +139,7 @@ namespace hicbit {
         //% block="time(s)"
         time = 0x03,
         /*
-	//% block="number_of_turns"
+    //% block="number_of_turns"
         number_of_turns = 0x04,
         //% block="angle"
         angle = 0x05,
@@ -170,7 +167,7 @@ namespace hicbit {
     }
 
     /**
-    *	Set interface motor speed , range of -255~255, that can control turn.etc.
+    *   Set interface motor speed , range of -255~255, that can control turn.etc.
     */
     //% weight=99 blockId=hicbit_set_Single_motor block="Set |port %port| motor|speed %speed| |Features %Features|: |%content|"
     //% speed.min=-100 speed.max=100 
@@ -212,10 +209,10 @@ namespace hicbit {
             buf[2] = speed
             buf[3] = 0x00;
             buf[4] = port;
-	    buf[5] = 0x0d;
-	    buf[6] = 0x0a;
+        buf[5] = 0x0d;
+        buf[6] = 0x0a;
             serial.writeBuffer(buf);
-	    //serial.writeString(NEW_LINE);
+        //serial.writeString(NEW_LINE);
 
         }
 
@@ -228,7 +225,7 @@ namespace hicbit {
             buf[3] = 0x00
             buf[4] = port;
             buf[5] = 0x0d;
-	    buf[6] = 0x0a;
+        buf[6] = 0x0a;
             serial.writeBuffer(buf);
             //serial.writeString(NEW_LINE);
             
@@ -244,64 +241,111 @@ namespace hicbit {
                 buf2[2] = speed;
                 buf2[3] = time2;
                 buf2[4] = port;
-		buf2[5] = 0x0d;
-		buf2[6] = 0x0a;
+        buf2[5] = 0x0d;
+        buf2[6] = 0x0a;
                 serial.writeBuffer(buf2);
                 //serial.writeString(NEW_LINE); 
         }
-	    while (serial.readLine().includes("ack")) {
-    			break;	
-    }
         basic.pause(100);
     }
 
     /**
-    *	Set interface motor1 and motor2 speed , range of -255~255, that can control turn.etc.
+    *   Set interface motor1 and motor2 speed , range of -255~255, that can control turn.etc.
     *   @param port1 First port, eg: hicbit.hicbit_Port.port1
     *   @param port2 The second port, eg: hicbit.hicbit_Port.port2
     */
-    //% weight=98 blockId=hicbit_set_Dual_motor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| |Features %Features|"
+    //% weight=98 blockId=hicbit_set_Dual_motor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| |Features %Features|: |%content|"
     //% speed1.min=-100 speed1.max=100 
     //% speed2.min=-100 speed2.max=100 
     //% inlineInputMode=inline
-    export function hicbit_set_Dual_motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, Features: hicbit_Features) {
+    export function hicbit_set_Dual_motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, Features: hicbit_Features, content: number) {
         //启动变量
-        let buf = pins.createBuffer(30);
-	let direction1,direction2:number=0;
-	if(speed1>0)direction1=1;
-	 else if(speed1<0)direction1=2;
-	 else direction1=0;
-	if(speed2>0)direction2=1;
-	 else if(speed2<0)direction2=2;
-	 else direction2=0; 
-   	
-	 if(Features==1){
+        let Turn: number = 0;
+        let buf = pins.createBuffer(255);
+        
+        //时间变量
+        let time2: number = 0;
+        let buf2 = pins.createBuffer(255);
+
+        //角度变量
+        let angle: number = 0 ;     //角度值
+        let angle_H: number = 0;    //角度高8位
+        let angle_L: number = 0;    //角度低8位
+        let turn: number = 0;
+        let buf3 = pins.createBuffer(255);
+
+        //圈数变量
+        let num_of_turn: number = 0 ;
+        
+        if (speed1 > 255 || speed1 < -255) 
+            return;
+        if (speed2 > 255 || speed2 < -255)
+            return;
+        
+        
+        if (Features == 1 || Features == 3)                   //启动&时间
+        {
+            if (speed1 < 0) {
+                speed1 = speed1 * -1;
+                if (speed2 > 0)
+                    Turn = 1;//电机1：反 电机2：正
+                else {
+                    speed2 = speed2 * -1;
+                    Turn = 3;//电机1：反 电机2：反
+                }
+            }
+            else if (speed2 < 0) {
+                speed2 = speed2 * -1;
+                if (speed1 > 0)
+                    Turn = 2;//电机1：正 电机2：反
+                else {
+                    speed1 = speed1 * -1;
+                    Turn = 3;//电机1：反 电机2：反
+                }
+            }
+
             buf[0] = 0x6D;      //标志位
-            buf[1] = port1;
-            buf[2] = direction1;
+            buf[1] = Turn;
+            buf[2] = port1;
             buf[3] = speed1;
             buf[4] = port2;
-            buf[5] = direction2;
-	    buf[6] = speed2;
-	    buf[7] = 0x0d;
-            buf[8] = 0x0a;
+            buf[5] = speed2;
+        buf[6] = 0x0d;
+            buf[7] = 0x0a;
             serial.writeBuffer(buf);
-	 }else if(Features==2){
-	    buf[0] = 0x6D;      //标志位
-            buf[1] = port1;
-            buf[2] = direction1;
-            buf[3] = 0;
-            buf[4] = port2;
-            buf[5] = direction2;
-	    buf[6] = 0;
-	    buf[7] = 0x0d;
-            buf[8] = 0x0a;
-            serial.writeBuffer(buf);
-	 
-	 }
-	    while (serial.readLine().includes("ack")) {
-    		break;	
-    }
+            //serial.writeString(NEW_LINE);
+
+            if (Features == 3)          //时间
+            { 
+                time2 = content * 1000;
+                basic.pause(time2);
+                
+                buf2[0] = 0x58;         //标志位
+                buf2[1] = 4;            //停止单电机
+                buf2[2] = 1;            //区分单电机：0双电机：1
+                buf2[3] = port1;
+                buf2[4] = port2;
+                buf2[5] =0x0d;
+        buf2[6] =0x0a;
+        serial.writeBuffer(buf2);
+        
+                //serial.writeString(NEW_LINE);
+
+            }
+        }
+
+        if(Features == 2)                   //停止
+        { 
+
+            buf2[0] = 0x58;           //标志位
+            buf2[1] = 4;              //停止单电机
+            buf2[2] = 1;
+            buf2[3] = port1;
+            buf2[4] = port2;
+            buf2[5] = 0x0d;
+            buf2[6] = 0x0a;
+        serial.writeBuffer(buf2);       
+        }
         basic.pause(100);
 
     }
@@ -317,18 +361,18 @@ namespace hicbit {
  * @param Features 
  * @param content 
  */
-    //% weight=98 blockId=hicbit_setTripleMotor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| and |port %port3| motor |speed %speed3| |Features %Features|"
+    //% weight=98 blockId=hicbit_setTripleMotor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| and |port %port3| motor |speed %speed3| |Features %Features|: |%content|"
     //% speed1.min=-100 speed1.max=100 
     //% speed2.min=-100 speed2.max=100
     //% speed3.min=-100 speed3.max=100
     //% inlineInputMode=inline
-    export function hicbit_setTripleMotor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,Features: hicbit_Features)
+    export function hicbit_setTripleMotor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,Features: hicbit_Features, content: number)
     {
         let direction1:number
         let direction2:number
         let direciton3:number
-        let buf = pins.createBuffer(30)
-	let content=0;
+        let buf = pins.createBuffer(255)
+
         if(speed1>0)
         {
             direction1=0x01
@@ -410,12 +454,7 @@ namespace hicbit {
              buf[10] = content
              buf[11] = 0x02 // 0 速度控制 ； // 1.停止//2.时间  // 时间
         }
-	    buf[12]=0x0d;
-	    buf[13]=0x0a;
-	serial.writeBuffer(buf);
-	    while (serial.readLine().includes("ack")) {
-    			break;	
-    }
+
         basic.pause(100);
     }
 
@@ -548,237 +587,222 @@ namespace hicbit {
              buf[13] = content
              buf[14] = 0x02 // 0 速度控制 ； // 1.停止//2.时间  // 时间
         }
-	    buf[15]=0x0d;
-	    buf[16]=0x0a;
-	    serial.writeBuffer(buf);
-	    while (serial.readLine().includes("ack")) {
-    			break;
-    }
         basic.pause(100);
 
     }
-	/**
-	*
-	* @param port1
-	* @param angle1
-	* @param speed1
-	* @param bias1
-	* @param port2
-	* @param angle2
-	* @param speed2
-	* @param bias2
-	*/
-	//% weight=98 blockId=HTMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|"
-	//% angle1.min=0
-	//% angle2.min=0
-	//% speed1.min=-100 speed1.max=100
-	//% speed2.min=-100 speed2.max=100
-	//% inlineInputMode=inline
-	export function HTMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number){
-		let direction1:number=0;
-		let direction2:number=0;
-		let angle_H1,angle_L1,angle_H2,angle_L2;
-		let buf=pins.createBuffer(30);
-		angle1+=bias1;
-		angle2+=bias2;
-		if(speed1<0)direction1=0x02;
-		else if(speed1==0)direction1=0x00;
-		else direction1=0x01;
-		
-		if(speed2<0)direction2=0x02;
-		else if(speed2==0)direction2=0x00;
-		else direction2=0x01;
-		angle_H1 = angle1 / 0xff;
-        	angle_L1 = angle1 % 0xff;
-		angle_H2 = angle2 / 0xff;
-        	angle_L2 = angle2 % 0xff;
-		
-		buf[0]=0x61;//双角度同步执行
-		buf[1]=port1;
-		buf[2]=direction1;
-		buf[3]=angle_H1;
-		buf[4]=angle_L1;
-		buf[5]=speed1;
-		buf[6]=port2;
-		buf[7]=direction2;
-		buf[8]=angle_H2;
-		buf[9]=angle_L2;
-		buf[10]=speed2;
-		buf[11]=0x0d;
-		buf[12]=0x0a;
-		serial.writeBuffer(buf);
-		while (serial.readLine().includes("ack")) {
-    			break;	
+    /**
+    *
+    * @param port1
+    * @param angle1
+    * @param speed1
+    * @param bias1
+    * @param port2
+    * @param angle2
+    * @param speed2
+    * @param bias2
+    */
+    //% weight=98 blockId=HTMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|"
+    //% angle1.min=0
+    //% angle2.min=0
+    //% speed1.min=-100 speed1.max=100
+    //% speed2.min=-100 speed2.max=100
+    //% inlineInputMode=inline
+    export function HTMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number){
+        let direction1:number=0;
+        let direction2:number=0;
+        let angle_H1,angle_L1,angle_H2,angle_L2;
+        let buf=pins.createBuffer(30);
+        angle1+=bias1;
+        angle2+=bias2;
+        if(speed1<0)direction1=0x02;
+        else if(speed1==0)direction1=0x00;
+        else direction1=0x01;
+        
+        if(speed2<0)direction2=0x02;
+        else if(speed2==0)direction2=0x00;
+        else direction2=0x01;
+        angle_H1 = angle1 / 0xff;
+            angle_L1 = angle1 % 0xff;
+        angle_H2 = angle2 / 0xff;
+            angle_L2 = angle2 % 0xff;
+        
+        buf[0]=0x61;//双角度同步执行
+        buf[1]=port1;
+        buf[2]=direction1;
+        buf[3]=angle_H1;
+        buf[4]=angle_L1;
+        buf[5]=speed1;
+        buf[6]=port2;
+        buf[7]=direction2;
+        buf[8]=angle_H2;
+        buf[9]=angle_L2;
+        buf[10]=speed2;
+        buf[11]=0x0d;
+        buf[12]=0x0a;
+        serial.writeBuffer(buf);
+            basic.pause(100);//等待串口发送完毕
     }
-        	basic.pause(100);//等待串口发送完毕
-	}
 
-	
-	/**
-	*
-	* @param port1
-	* @param angle1
-	* @param speed1
-	* @param bias1
-	* @param port2
-	* @param angle2
-	* @param speed2
-	* @param bias2
-	* @param port3
-	* @param angle3
-	* @param speed3
-	* @param bias3
-	*/
-	//% weight=98 blockId=HTreeMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|and |port %port3| motor|angle %angle3|and |speed %speed3|and |bias %bias3|"
-	//% angle1.min=0
-	//% angle2.min=0
-	//% angle3.min=0
-	//% speed1.min=-100 speed1.max=100
-	//% speed2.min=-100 speed2.max=100
-	//% speed3.min=-100 speed3.max=100
-	//% inlineInputMode=inline
-	export function HTreeMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number,port3:hicbit_Port,angle3:number,speed3:number,bias3:number){
-		let direction1:number=0;
-		let direction2:number=0;
-		let direction3:number=0;
-		let angle_H1,angle_L1,angle_H2,angle_L2,angle_H3,angle_L3;
-		let buf=pins.createBuffer(30);
-		angle1+=bias1;
-		angle2+=bias2;
-		angle3+=bias3;
-		if(speed1<0)direction1=0x02;
-		else if(speed1==0)direction1=0x00;
-		else direction1=0x01;
-		
-		if(speed2<0)direction2=0x02;
-		else if(speed2==0)direction2=0x00;
-		else direction2=0x01;
-		
-		if(speed3<0)direction3=0x02;
-		else if(speed3==0)direction3=0x00;
-		else direction3=0x01;
-		
-		angle_H1 = angle1 / 0xff;
-        	angle_L1 = angle1 % 0xff;
-		angle_H2 = angle2 / 0xff;
-        	angle_L2 = angle2 % 0xff;
-		angle_H3 = angle3 / 0xff;
-        	angle_L3 = angle3 % 0xff;
-		
-		buf[0]=0x60;//双角度同步执行
-		buf[1]=port1;
-		buf[2]=direction1;
-		buf[3]=angle_H1;
-		buf[4]=angle_L1;
-		buf[5]=speed1;
-		buf[6]=port2;
-		buf[7]=direction2;
-		buf[8]=angle_H2;
-		buf[9]=angle_L2;
-		buf[10]=speed2;
-		buf[11]=port3;
-		buf[12]=direction3;
-		buf[13]=angle_H3;
-		buf[14]=angle_L3;
-		buf[15]=speed3;
-		buf[16]=0x0d;
-		buf[17]=0x0a;
-		serial.writeBuffer(buf);
-		while (serial.readLine().includes("ack")) {
-    		break;
-    }	
-        	basic.pause(100);//等待串口发送完毕
-	}
-	
-	/**
-	*
-	* @param port1
-	* @param angle1
-	* @param speed1
-	* @param bias1
-	* @param port2
-	* @param angle2
-	* @param speed2
-	* @param bias2
-	* @param port3
-	* @param angle3
-	* @param speed3
-	* @param bias3
-	* @param port4
-	* @param angle4
-	* @param speed4
-	* @param bias4
-	*/
-	//% weight=98 blockId=HFMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|and |port %port3| motor|angle %angle3|and |speed %speed3|and |bias %bias3|and |port %port4| motor|angle %angle4|and |speed %speed4|and |bias %bias4|"
-	//% angle1.min=0
-	//% angle2.min=0
-	//% angle3.min=0
-	//% angle4.min=0
-	//% speed4.min=-100 speed4.max=100
-	//% speed1.min=-100 speed1.max=100
-	//% speed2.min=-100 speed2.max=100
-	//% speed3.min=-100 speed3.max=100
-	//% inlineInputMode=inline
-	export function HFMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number,port3:hicbit_Port,angle3:number,speed3:number,bias3:number,port4:hicbit_Port,angle4:number,speed4:number,bias4:number){
-		let direction1:number=0;
-		let direction2:number=0;
-		let direction3:number=0;
-		let direction4:number=0;
-		let angle_H1,angle_L1,angle_H2,angle_L2,angle_H3,angle_L3,angle_H4,angle_L4;
-		let buf=pins.createBuffer(30);
-		angle1+=bias1;
-		angle2+=bias2;
-		angle3+=bias3;
-		angle4+=bias4;
-		if(speed1<0)direction1=0x02;
-		else if(speed1==0)direction1=0x00;
-		else direction1=0x01;
-		
-		if(speed2<0)direction2=0x02;
-		else if(speed2==0)direction2=0x00;
-		else direction2=0x01;
-		
-		if(speed3<0)direction3=0x02;
-		else if(speed3==0)direction3=0x00;
-		else direction3=0x01;
-		
-		angle_H1 = angle1 / 0xff;
-        	angle_L1 = angle1 % 0xff;
-		angle_H2 = angle2 / 0xff;
-        	angle_L2 = angle2 % 0xff;
-		angle_H3 = angle3 / 0xff;
-        	angle_L3 = angle3 % 0xff;
-		
-		buf[0]=0x62;//双角度同步执行
-		buf[1]=port1;
-		buf[2]=direction1;
-		buf[3]=angle_H1;
-		buf[4]=angle_L1;
-		buf[5]=speed1;
-		buf[6]=port2;
-		buf[7]=direction2;
-		buf[8]=angle_H2;
-		buf[9]=angle_L2;
-		buf[10]=speed2;
-		buf[11]=port3;
-		buf[12]=direction3;
-		buf[13]=angle_H3;
-		buf[14]=angle_L3;
-		buf[15]=speed3;
-		buf[16]=port4;
-		buf[17]=direction4;
-		buf[18]=angle_H4;
-		buf[19]=angle_L4;
-		buf[20]=speed4;
-		buf[21]=0x0d;
-		buf[22]=0x0a;
-		serial.writeBuffer(buf);
-		while (serial.readLine().includes("ack")) {
-    			break;	
+    
+    /**
+    *
+    * @param port1
+    * @param angle1
+    * @param speed1
+    * @param bias1
+    * @param port2
+    * @param angle2
+    * @param speed2
+    * @param bias2
+    * @param port3
+    * @param angle3
+    * @param speed3
+    * @param bias3
+    */
+    //% weight=98 blockId=HTreeMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|and |port %port3| motor|angle %angle3|and |speed %speed3|and |bias %bias3|"
+    //% angle1.min=0
+    //% angle2.min=0
+    //% angle3.min=0
+    //% speed1.min=-100 speed1.max=100
+    //% speed2.min=-100 speed2.max=100
+    //% speed3.min=-100 speed3.max=100
+    //% inlineInputMode=inline
+    export function HTreeMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number,port3:hicbit_Port,angle3:number,speed3:number,bias3:number){
+        let direction1:number=0;
+        let direction2:number=0;
+        let direction3:number=0;
+        let angle_H1,angle_L1,angle_H2,angle_L2,angle_H3,angle_L3;
+        let buf=pins.createBuffer(30);
+        angle1+=bias1;
+        angle2+=bias2;
+        angle3+=bias3;
+        if(speed1<0)direction1=0x02;
+        else if(speed1==0)direction1=0x00;
+        else direction1=0x01;
+        
+        if(speed2<0)direction2=0x02;
+        else if(speed2==0)direction2=0x00;
+        else direction2=0x01;
+        
+        if(speed3<0)direction3=0x02;
+        else if(speed3==0)direction3=0x00;
+        else direction3=0x01;
+        
+        angle_H1 = angle1 / 0xff;
+            angle_L1 = angle1 % 0xff;
+        angle_H2 = angle2 / 0xff;
+            angle_L2 = angle2 % 0xff;
+        angle_H3 = angle3 / 0xff;
+            angle_L3 = angle3 % 0xff;
+        
+        buf[0]=0x60;//双角度同步执行
+        buf[1]=port1;
+        buf[2]=direction1;
+        buf[3]=angle_H1;
+        buf[4]=angle_L1;
+        buf[5]=speed1;
+        buf[6]=port2;
+        buf[7]=direction2;
+        buf[8]=angle_H2;
+        buf[9]=angle_L2;
+        buf[10]=speed2;
+        buf[11]=port3;
+        buf[12]=direction3;
+        buf[13]=angle_H3;
+        buf[14]=angle_L3;
+        buf[15]=speed3;
+        buf[16]=0x0d;
+        buf[17]=0x0a;
+        serial.writeBuffer(buf);
+            basic.pause(100);//等待串口发送完毕
     }
-        	basic.pause(100);//等待串口发送完毕
-	}
-	
+    
+    /**
+    *
+    * @param port1
+    * @param angle1
+    * @param speed1
+    * @param bias1
+    * @param port2
+    * @param angle2
+    * @param speed2
+    * @param bias2
+    * @param port3
+    * @param angle3
+    * @param speed3
+    * @param bias3
+    * @param port4
+    * @param angle4
+    * @param speed4
+    * @param bias4
+    */
+    //% weight=98 blockId=HFMAC block="set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|and |port %port3| motor|angle %angle3|and |speed %speed3|and |bias %bias3|and |port %port4| motor|angle %angle4|and |speed %speed4|and |bias %bias4|"
+    //% angle1.min=0
+    //% angle2.min=0
+    //% angle3.min=0
+    //% angle4.min=0
+    //% speed4.min=-100 speed4.max=100
+    //% speed1.min=-100 speed1.max=100
+    //% speed2.min=-100 speed2.max=100
+    //% speed3.min=-100 speed3.max=100
+    //% inlineInputMode=inline
+    export function HFMAC(port1:hicbit_Port,angle1:number,speed1:number,bias1:number,port2:hicbit_Port,angle2:number,speed2:number,bias2:number,port3:hicbit_Port,angle3:number,speed3:number,bias3:number,port4:hicbit_Port,angle4:number,speed4:number,bias4:number){
+        let direction1:number=0;
+        let direction2:number=0;
+        let direction3:number=0;
+        let direction4:number=0;
+        let angle_H1,angle_L1,angle_H2,angle_L2,angle_H3,angle_L3,angle_H4,angle_L4;
+        let buf=pins.createBuffer(30);
+        angle1+=bias1;
+        angle2+=bias2;
+        angle3+=bias3;
+        angle4+=bias4;
+        if(speed1<0)direction1=0x02;
+        else if(speed1==0)direction1=0x00;
+        else direction1=0x01;
+        
+        if(speed2<0)direction2=0x02;
+        else if(speed2==0)direction2=0x00;
+        else direction2=0x01;
+        
+        if(speed3<0)direction3=0x02;
+        else if(speed3==0)direction3=0x00;
+        else direction3=0x01;
+        
+        angle_H1 = angle1 / 0xff;
+            angle_L1 = angle1 % 0xff;
+        angle_H2 = angle2 / 0xff;
+            angle_L2 = angle2 % 0xff;
+        angle_H3 = angle3 / 0xff;
+            angle_L3 = angle3 % 0xff;
+        
+        buf[0]=0x62;//双角度同步执行
+        buf[1]=port1;
+        buf[2]=direction1;
+        buf[3]=angle_H1;
+        buf[4]=angle_L1;
+        buf[5]=speed1;
+        buf[6]=port2;
+        buf[7]=direction2;
+        buf[8]=angle_H2;
+        buf[9]=angle_L2;
+        buf[10]=speed2;
+        buf[11]=port3;
+        buf[12]=direction3;
+        buf[13]=angle_H3;
+        buf[14]=angle_L3;
+        buf[15]=speed3;
+        buf[16]=port4;
+        buf[17]=direction4;
+        buf[18]=angle_H4;
+        buf[19]=angle_L4;
+        buf[20]=speed4;
+        buf[21]=0x0d;
+        buf[22]=0x0a;
+        serial.writeBuffer(buf);
+            basic.pause(100);//等待串口发送完毕
+    }
+    
 /**
  * 
  * @param port
@@ -792,11 +816,11 @@ namespace hicbit {
  //% bias.min=-100 bias.max=100
  //% inlineInputMode=inline
  export function hicbit_setSingleangleMotor(port:hicbit_Coded_motor_Port,angle:number,speed:number,bias:number){
- 	let direction: number = 0;
-	let angle_H, angle_L; 
-	let status;
+    let direction: number = 0;
+    let angle_H, angle_L; 
+    let status;
         let buf = pins.createBuffer(30);
-	 angle=angle+bias;
+     angle=angle+bias;
         if(angle<0){
             direction=0x02;
 
@@ -807,35 +831,32 @@ namespace hicbit {
             direction=0x01
         }
         
-	angle_H = angle / 0xff;
+    angle_H = angle / 0xff;
         angle_L = angle % 0xff;
-	
+    
 
         buf[0] = 0x59;      //标志位
         buf[1] = direction
         buf[2] = angle_H;
         buf[3] = angle_L;
         buf[4] = port;
-	buf[5] = speed;
-	buf[6] = 0x0d;
-	buf[7] = 0x0a;
+    buf[5] = speed;
+    buf[6] = 0x0d;
+    buf[7] = 0x0a;
         serial.writeBuffer(buf);
-	 while (serial.readLine().includes("ack")) {
-    		break;	
-    }
         basic.pause(100);//等待串口发送完毕
  }
-	
+    
     /**
-    *	Set Coded motor , angle of -360~360, that can control turn.
+    *   Set Coded motor , angle of -360~360, that can control turn.
     */
     //% weight=97 blockId=hicbit_setCodedmotor block="Set |port %port| motor|angle %angle| speed|speed %speed|  "
     //% angle.min=-360 angle.max=360
     //% inlineInputMode=inline
     export function hicbit_setCodedmotor(port: hicbit_Coded_motor_Port,angle: number,speed:number) {
         let direction: number = 0;
-	let angle_H, angle_L; 
-	let status;
+    let angle_H, angle_L; 
+    let status;
         let buf = pins.createBuffer(30);
         if(angle<0){
             direction=0x02;
@@ -847,22 +868,19 @@ namespace hicbit {
             direction=0x01
         }
         
-	angle_H = angle / 0xff;
+    angle_H = angle / 0xff;
         angle_L = angle % 0xff;
-	
+    
 
         buf[0] = 0x59;      //标志位
         buf[1] = direction
         buf[2] = angle_H;
         buf[3] = angle_L;
         buf[4] = port;
-	buf[5] = speed;
-	buf[6] = 0x0d;
-	buf[7] = 0x0a;
+    buf[5] = speed;
+    buf[6] = 0x0d;
+    buf[7] = 0x0a;
         serial.writeBuffer(buf);
-	    while (serial.readLine().includes("ack")) {
-    		break;	
-    }
         basic.pause(100);//等待串口发送完毕
     }
 
@@ -1516,8 +1534,8 @@ namespace RGB_light {
 
     let lhRGBLight: hicbitRGBLight.LHhicbitRGBLight;
     /**
-	 * Initialize Light belt
-	 */
+     * Initialize Light belt
+     */
     //% weight=100 blockId=hicbit_initRGBLight block="Initialize light belt at port %port"
     export function hicbit_initRGBLight(port: hicbit_Port) {
         switch (port) {
@@ -1546,8 +1564,8 @@ namespace RGB_light {
     }
     
     /**
-	 * Set RGB
-	 */
+     * Set RGB
+     */
     //% weight=99 blockId=hicbit_setPixelRGB block="Set light belt at|%lightoffset|color to |red %red|and|green %green|and|blue %blue|"
     //% inlineInputMode=inline
     //% red.min=0 red.max=255
@@ -1634,8 +1652,8 @@ namespace Display {
         let buf = pins.createBuffer(30);//清屏
         buf[0] = 0xDD;
         buf[1] = 9;
-	    buf[2] = 0x0d;
-	    buf[3] = 0x0a;
+        buf[2] = 0x0d;
+        buf[3] = 0x0a;
         serial.writeBuffer(buf);
         //serial.writeString(NEW_LINE);
         basic.pause(200);
@@ -1702,44 +1720,44 @@ namespace Display {
     }
 
 }
-	
-	
-	/**
+    
+    
+    /**
  * 自定义图形块
  */
 //% weight=5 color=#0fbc12 icon="\uf111"
 namespace MPU6050{
-    //	加速度，陀螺仪，磁力 Acceleration, gyroscope, magnetic
+    //  加速度，陀螺仪，磁力 Acceleration, gyroscope, magnetic
     // 定义MPU6050内部地址
     //****************************************
-    const   SMPLRT_DIV=		0x19	//陀螺仪采样率，典型值：0x07(125Hz)
-    const	CONFIG=			0x1A	//低通滤波频率，典型值：0x06(5Hz)
-    const	GYRO_CONFIG		=0x1B	//陀螺仪自检及测量范围，典型值：0x18(不自检，2000deg/s)
-    const	ACCEL_CONFIG	=0x1C	//加速计自检、测量范围及高通滤波频率，典型值：0x01(不自检，2G，5Hz)
-    const	ACCEL_XOUT_H	=0x3B	//加速度地址
-    const	ACCEL_XOUT_L	=0x3C
-    const	ACCEL_YOUT_H	=0x3D
-    const	ACCEL_YOUT_L	=0x3E
-    const	ACCEL_ZOUT_H	=0x3F
-    const	ACCEL_ZOUT_L	=0x40
-    const	TEMP_OUT_H		=0x41	//温度地址
-    const	TEMP_OUT_L		=0x42
-    const	GYRO_XOUT_H		=0x43	//陀螺仪地址
-    const	GYRO_XOUT_L		=0x44	
-    const	GYRO_YOUT_H		=0x45
-    const	GYRO_YOUT_L		=0x46
-    const	GYRO_ZOUT_H		=0x47
-    const	GYRO_ZOUT_L		=0x48
-    const MAG_ADDRESS		=0x0c
-    const MAG_XOUT_H		=0x04		//磁力传感器地址
-    const MAG_XOUT_L		=0x03
-    const MAG_YOUT_H		=0x06
-    const MAG_YOUT_L		=0x05
-    const MAG_ZOUT_H		=0x08
-    const MAG_ZOUT_L		=0x07
-    const	PWR_MGMT_1		=0x6B	//电源管理，典型值：0x00(正常启用)
-    const	WHO_AM_I		=0x75	//IIC地址寄存器(默认数值0x68，只读)
-    const	MPU6050_Addr=   0xD0	  //定义器件在IIC总线中的从地址,根据ALT  ADDRESS地址引脚不同修改
+    const   SMPLRT_DIV=     0x19    //陀螺仪采样率，典型值：0x07(125Hz)
+    const   CONFIG=         0x1A    //低通滤波频率，典型值：0x06(5Hz)
+    const   GYRO_CONFIG     =0x1B   //陀螺仪自检及测量范围，典型值：0x18(不自检，2000deg/s)
+    const   ACCEL_CONFIG    =0x1C   //加速计自检、测量范围及高通滤波频率，典型值：0x01(不自检，2G，5Hz)
+    const   ACCEL_XOUT_H    =0x3B   //加速度地址
+    const   ACCEL_XOUT_L    =0x3C
+    const   ACCEL_YOUT_H    =0x3D
+    const   ACCEL_YOUT_L    =0x3E
+    const   ACCEL_ZOUT_H    =0x3F
+    const   ACCEL_ZOUT_L    =0x40
+    const   TEMP_OUT_H      =0x41   //温度地址
+    const   TEMP_OUT_L      =0x42
+    const   GYRO_XOUT_H     =0x43   //陀螺仪地址
+    const   GYRO_XOUT_L     =0x44   
+    const   GYRO_YOUT_H     =0x45
+    const   GYRO_YOUT_L     =0x46
+    const   GYRO_ZOUT_H     =0x47
+    const   GYRO_ZOUT_L     =0x48
+    const MAG_ADDRESS       =0x0c
+    const MAG_XOUT_H        =0x04       //磁力传感器地址
+    const MAG_XOUT_L        =0x03
+    const MAG_YOUT_H        =0x06
+    const MAG_YOUT_L        =0x05
+    const MAG_ZOUT_H        =0x08
+    const MAG_ZOUT_L        =0x07
+    const   PWR_MGMT_1      =0x6B   //电源管理，典型值：0x00(正常启用)
+    const   WHO_AM_I        =0x75   //IIC地址寄存器(默认数值0x68，只读)
+    const   MPU6050_Addr=   0xD0      //定义器件在IIC总线中的从地址,根据ALT  ADDRESS地址引脚不同修改
 
 
     export enum MPU6050Result {
@@ -1776,10 +1794,10 @@ namespace MPU6050{
     /**
      * 
      * HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,PWR_MGMT_1,8,(unsigned char*)0X00,8,0XFFFF);
-	    HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,SMPLRT_DIV,8,(unsigned char*)0x07,8,0XFFFF);
-	    HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,CONFIG,8,(unsigned char*)0x06,8,0XFFFF);
-	    HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,GYRO_CONFIG,8,(unsigned char*)0x18,8,0XFFFF);
-	    HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,ACCEL_CONFIG,8,(unsigned char*)0x01,8,0XFFFF);
+        HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,SMPLRT_DIV,8,(unsigned char*)0x07,8,0XFFFF);
+        HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,CONFIG,8,(unsigned char*)0x06,8,0XFFFF);
+        HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,GYRO_CONFIG,8,(unsigned char*)0x18,8,0XFFFF);
+        HAL_I2C_Mem_Write(&hi2c1,MPU6050_Addr,ACCEL_CONFIG,8,(unsigned char*)0x01,8,0XFFFF);
      */
         i2cwrite(MPU6050_Addr,PWR_MGMT_1,0X00)   
         i2cwrite(MPU6050_Addr,SMPLRT_DIV,0x07)
