@@ -26,6 +26,7 @@
 	"hicbit.hicbit_Features.time|block":"时间(s)",
 	"hicbit.hicbit_Features.number_of_turns|block":"圈数",
 	"hicbit.hicbit_Features.angle|block":"角度",
+	"hicbit.hicbit_setSingleangleMotor|block": "设置|%port|电机角度|%angle|速度|%speed|偏差|%bias|",
 	"hicbit.hicbit_set_Single_motor|block": "设置|%port|电机速度|%speed|功能|%Features|:|%content|",
 	"hicbit.hicbit_set_Dual_motor|block": "设置|%port1|电机速度|%speed1|和|%port2|电机速度|%speed2|功能|%Features|:|%content|",
 	"hicbit.hicbit_setCodedmotor|block":"设置|%port|的电机|角度 %angle|和|速度 %speed|",
