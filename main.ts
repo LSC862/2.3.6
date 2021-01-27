@@ -137,9 +137,10 @@ namespace hicbit {
         start_up = 0x01,
         //% block="stop"
         stop = 0x02,
-        //% block="time(s)"
-        time = 0x03,
         /*
+	//% block="time(s)"
+        time = 0x03,
+        
 	//% block="number_of_turns"
         number_of_turns = 0x04,
         //% block="angle"
