@@ -31,11 +31,7 @@
 	"hicbit.HTreeMAC|block": "设置|%port1|电机角度|%angle1|速度|%speed1|偏差|%bias1|设置|%port2|电机角度|%angle2|速度|%speed2|偏差|%bias2|设置|%port3|电机角度|%angle3|速度|%speed3|偏差|%bias3|",
 	"hicbit.HFMAC|block": "设置|%port1|电机角度|%angle1|速度|%speed1|偏差|%bias1|设置|%port2|电机角度|%angle2|速度|%speed2|偏差|%bias2|设置|%port3|电机角度|%angle3|速度|%speed3|偏差|%bias3|设置|%port4|电机角度|%angle4|速度|%speed4|偏差|%bias4|",
 	"hicbit.hicbit_set_Single_motor|block": "设置|%port|电机速度|%speed|功能|%Features|,
-	"hicbit.hicbit_set_Dual_motor|block": "设置|%port1|电机速度|%speed1|和|%port2|电机速度|%speed2|功能|%Features|",
-	"hicbit.hicbit_setTripleMotor|block": "设置|%port1|电机速度|%speed1|和|%port2|电机速度|%speed2|功能|%Features|",
-	"hicbit.hicbit_set4Motor|block": "设置|%port1|电机速度|%speed1|和|%port2|电机速度|%speed2|功能|%Features|",
-	"hicbit.hicbit_setCodedmotor|block":"设置|%port|的电机|角度 %angle|和|速度 %speed|",
-	
+
 	
 	"{id:category}Sensor": "Hicbit传感器",
 	"Sensor.hicbit_Port.port1|block":"接口1",
