@@ -836,7 +836,7 @@ namespace hicbit {
  * @param bias 
  */
  //% weight=98 blockId=hicbit_setSingleangleMotor block="Set |port %port| motor|angle %angle| and|speed %speed| and|bias %bias|"
- //% angle.min=-360 angle.max=360
+ //% angle.min=0 angle.max=360
  //% speed.min=-100 speed.max=100
  //% bias.min=-100 bias.max=100
  //% inlineInputMode=inline
@@ -846,10 +846,10 @@ namespace hicbit {
 	let status;
         let buf = pins.createBuffer(30);
 	 angle=angle+bias;
-        if(angle<0){
+        if(speed<0){
             direction=0x02;
 
-        }else if(angle==0x00){
+        }else if(speed==0x00){
             direction=0x00
         }
         else{
@@ -872,48 +872,10 @@ namespace hicbit {
 	 while (serial.readLine().includes("ack")) {
 			break;
 		}
-        basic.pause(100);//等待串口发送完毕
+        
  }
 	
-    /**
-    *	Set Coded motor , angle of -360~360, that can control turn.
-    */
-    //% weight=97 blockId=hicbit_setCodedmotor block="Set |port %port| motor|angle %angle| speed|speed %speed|  "
-    //% angle.min=-360 angle.max=360
-    //% inlineInputMode=inline
-    export function hicbit_setCodedmotor(port: hicbit_Coded_motor_Port,angle: number,speed:number) {
-        let direction: number = 0;
-	let angle_H, angle_L; 
-	let status;
-        let buf = pins.createBuffer(30);
-        if(angle<0){
-            direction=0x02;
-
-        }else if(angle==0x00){
-            direction=0x00
-        }
-        else{
-            direction=0x01
-        }
-        
-	angle_H = angle / 0xff;
-        angle_L = angle % 0xff;
-	
-
-        buf[0] = 0x59;      //标志位
-        buf[1] = direction
-        buf[2] = angle_H;
-        buf[3] = angle_L;
-        buf[4] = port;
-	buf[5] = speed;
-	buf[6] = 0x0d;
-	buf[7] = 0x0a;
-        serial.writeBuffer(buf);
-	    while (serial.readLine().includes("ack")) {
-			break;
-		}
-        basic.pause(100);//等待串口发送完毕
-    }
+ 
 
 }
 
