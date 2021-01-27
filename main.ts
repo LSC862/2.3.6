@@ -168,12 +168,12 @@ namespace hicbit {
     }
 
     /**
-    *	Set interface motor speed , range of -255~255, that can control turn.etc.
+    *	Set interface motor speed , range of -100~100, that can control turn.etc.
     */
-    //% weight=99 blockId=hicbit_set_Single_motor block="Set |port %port| motor|speed %speed| |Features %Features|: |%content|"
+    //% weight=99 blockId=hicbit_set_Single_motor block="Set |port %port| motor|speed %speed| |Features %Features|"
     //% speed.min=-100 speed.max=100 
     //% inlineInputMode=inline
-    export function hicbit_set_Single_motor(port: hicbit_Port, speed: number, Features: hicbit_Features, content: number) 
+    export function hicbit_set_Single_motor(port: hicbit_Port, speed: number, Features: hicbit_Features) 
     {
                //启动变量
         let direction: number = 0;
@@ -213,8 +213,6 @@ namespace hicbit {
 	    buf[5] = 0x0d;
 	    buf[6] = 0x0a;
             serial.writeBuffer(buf);
-	    //serial.writeString(NEW_LINE);
-
         }
 
         if(Features == 2)                   //停止
@@ -227,31 +225,12 @@ namespace hicbit {
             buf[4] = port;
             buf[5] = 0x0d;
 	    buf[6] = 0x0a;
-            serial.writeBuffer(buf);
-            //serial.writeString(NEW_LINE);
-            
+            serial.writeBuffer(buf);          
         }
-
-        if (Features == 3) {         //时间
-            
-                time2 = content ;
-                //basic.pause(time2);
-                
-                buf2[0] = 0x58;         //标志位
-                buf2[1] = direction;            //停止单电机
-                buf2[2] = speed;
-                buf2[3] = time2;
-                buf2[4] = port;
-		buf2[5] = 0x0d;
-		buf2[6] = 0x0a;
-                serial.writeBuffer(buf2);
-                //serial.writeString(NEW_LINE); 
-        }
-	    
 	    while (serial.readLine().includes("ack")) {
 			break;
 		}	
-        basic.pause(100);
+
     }
 
     /**
@@ -259,98 +238,36 @@ namespace hicbit {
     *   @param port1 First port, eg: hicbit.hicbit_Port.port1
     *   @param port2 The second port, eg: hicbit.hicbit_Port.port2
     */
-    //% weight=98 blockId=hicbit_set_Dual_motor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| |Features %Features|: |%content|"
+    //% weight=98 blockId=hicbit_set_Dual_motor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| |Features %Features|"
     //% speed1.min=-100 speed1.max=100 
     //% speed2.min=-100 speed2.max=100 
     //% inlineInputMode=inline
-    export function hicbit_set_Dual_motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, Features: hicbit_Features, content: number) {
+    export function hicbit_set_Dual_motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, Features: hicbit_Features) {
         //启动变量
-        let Turn: number = 0;
-        let buf = pins.createBuffer(255);
+        let direction1,direction2:number=0;
+        let buf = pins.createBuffer(20);
+        if(speed1>0)direction1=0x01;
+	else if(speed1<0){direction1=0x02;speed1*=-1;}
+	else direction1=0x00;
+	
+	    if(speed2>0)direction2=0x01;
+	else if(speed2<0){direction2=0x02;speed2*=-1;}
+	else direction2=0x00;
         
-        //时间变量
-        let time2: number = 0;
-        let buf2 = pins.createBuffer(255);
+	if(Features==2){speed1=speed2=0;}
+	
+      	buf[0]=0x6d;//双电机速度控制
+	buf[1]=port1;
+	buf[2]=direction1;
+	buf[3]=speed1;
+	buf[4]=port2;
+	buf[5]=direction2;
+	buf[6]=speed2;
+	buf[7]=0x0d;
+	buf[8]=0x0a;
+	serial.writeBuffer(buf1);
 
-        //角度变量
-        let angle: number = 0 ;     //角度值
-        let angle_H: number = 0;    //角度高8位
-        let angle_L: number = 0;    //角度低8位
-        let turn: number = 0;
-        let buf3 = pins.createBuffer(255);
-
-        //圈数变量
-        let num_of_turn: number = 0 ;
-        
-        if (speed1 > 255 || speed1 < -255) 
-            return;
-        if (speed2 > 255 || speed2 < -255)
-            return;
-        
-        
-        if (Features == 1 || Features == 3)                   //启动&时间
-        {
-            if (speed1 < 0) {
-                speed1 = speed1 * -1;
-                if (speed2 > 0)
-                    Turn = 1;//电机1：反 电机2：正
-                else {
-                    speed2 = speed2 * -1;
-                    Turn = 3;//电机1：反 电机2：反
-                }
-            }
-            else if (speed2 < 0) {
-                speed2 = speed2 * -1;
-                if (speed1 > 0)
-                    Turn = 2;//电机1：正 电机2：反
-                else {
-                    speed1 = speed1 * -1;
-                    Turn = 3;//电机1：反 电机2：反
-                }
-            }
-
-            buf[0] = 0x6D;      //标志位
-            buf[1] = Turn;
-            buf[2] = port1;
-            buf[3] = speed1;
-            buf[4] = port2;
-            buf[5] = speed2;
-	    buf[6] = 0x0d;
-            buf[7] = 0x0a;
-            serial.writeBuffer(buf);
-            //serial.writeString(NEW_LINE);
-
-            if (Features == 3)          //时间
-            { 
-                time2 = content * 1000;
-                basic.pause(time2);
-                
-                buf2[0] = 0x58;         //标志位
-                buf2[1] = 4;            //停止单电机
-                buf2[2] = 1;            //区分单电机：0双电机：1
-                buf2[3] = port1;
-                buf2[4] = port2;
-                buf2[5] =0x0d;
-		buf2[6] =0x0a;
-		serial.writeBuffer(buf2);
-		
-                //serial.writeString(NEW_LINE);
-
-            }
-        }
-
-        if(Features == 2)                   //停止
-        { 
-
-            buf2[0] = 0x58;           //标志位
-            buf2[1] = 4;              //停止单电机
-            buf2[2] = 1;
-            buf2[3] = port1;
-            buf2[4] = port2;
-            buf2[5] = 0x0d;
-            buf2[6] = 0x0a;
-	    serial.writeBuffer(buf2);       
-        }
+    
 	    
 	    while (serial.readLine().includes("ack")) {
 			break;
@@ -370,23 +287,24 @@ namespace hicbit {
  * @param Features 
  * @param content 
  */
-    //% weight=98 blockId=hicbit_setTripleMotor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| and |port %port3| motor |speed %speed3| |Features %Features|: |%content|"
+    //% weight=98 blockId=hicbit_setTripleMotor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| and |port %port3| motor |speed %speed3| |Features %Features|"
     //% speed1.min=-100 speed1.max=100 
     //% speed2.min=-100 speed2.max=100
     //% speed3.min=-100 speed3.max=100
     //% inlineInputMode=inline
-    export function hicbit_setTripleMotor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,Features: hicbit_Features, content: number)
+    export function hicbit_setTripleMotor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,Features: hicbit_Features)
     {
         let direction1:number
         let direction2:number
         let direciton3:number
-        let buf = pins.createBuffer(255)
+        let buf = pins.createBuffer(20)
 
         if(speed1>0)
         {
             direction1=0x01
         }else if(speed1<0)
         {
+		speed1*=-1;
             direction1=0x02
         }else 
         {
@@ -398,6 +316,7 @@ namespace hicbit {
             direction2=0x01
         }else if(speed2<0)
         {
+		speed2*=-1;
             direction2=0x02
         }else 
         {
@@ -408,15 +327,16 @@ namespace hicbit {
             direciton3=0x01
         }else if(speed3<0)
         {
+		speed3*=-1;
             direciton3=0x02
         }else 
         {
             direciton3=0x00
         }
 
-
-        if(Features==1)
-        {
+		
+        if(Features==2){speed1=speed2=speed3=0;}
+        
              buf[0] = 0x6E //控制位
              buf[1] = direction1
              buf[2] = port1 
@@ -427,46 +347,12 @@ namespace hicbit {
              buf[7] = direciton3
              buf[8] = port3
              buf[9] = speed3
-             buf[10] = content
-             buf[11] = 0x00 // 0 速度控制 ； // 1.停止//2.时间  // 时间
-
-        }
-        if(Features==2)
-        {
-             content*=1000
-             buf[0] = 0x6E //控制位
-             buf[1] = direction1
-             buf[2] = port1 
-             buf[3] = speed1 //速度or角度
-             buf[4] = direction2 
-             buf[5] = port2
-             buf[6] = speed2 // 速度or角度
-             buf[7] = direciton3
-             buf[8] = port3
-             buf[9] = speed3
-             buf[10] = content
-             buf[11] = 0x01 // 0 速度控制 ； // 1.停止//2.时间  // 时间
-
-        }
-        if(Features==3)
-        {
-            buf[0] = 0x6E //控制位
-             buf[1] = direction1
-             buf[2] = port1 
-             buf[3] = speed1 //速度or角度
-             buf[4] = direction2 
-             buf[5] = port2
-             buf[6] = speed2 // 速度or角度
-             buf[7] = direciton3
-             buf[8] = port3
-             buf[9] = speed3
-             buf[10] = content
-             buf[11] = 0x02 // 0 速度控制 ； // 1.停止//2.时间  // 时间
-        }
+             buf[10] = 0x0d
+             buf[11] = 0x0a 
+	     serial.writeBuffer(buf);   
 		while (serial.readLine().includes("ack")) {
 			break;
 		}
-        basic.pause(100);
     }
 
     /**
@@ -482,25 +368,26 @@ namespace hicbit {
      * @param Features 
      * @param content 
      */
-    //% weight=98 blockId=hicbit_set4Motor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| and |port %port3| motor |speed %speed3| and |port %port4| motor |speed %speed4| |Features %Features|: |%content|"
+    //% weight=98 blockId=hicbit_set4Motor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| and |port %port3| motor |speed %speed3| and |port %port4| motor |speed %speed4| |Features %Features|"
     //% speed1.min=-100 speed1.max=100 
     //% speed2.min=-100 speed2.max=100
     //% speed3.min=-100 speed3.max=100
     //% speed4.min=-100 speed4.max=100
     //% inlineInputMode=inline
-    export function hicbit_set4Motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,port4:hicbit_Port,speed4:number,Features: hicbit_Features, content: number)
+    export function hicbit_set4Motor(port1: hicbit_Port, speed1: number,port2: hicbit_Port, speed2: number, port3:hicbit_Port,speed3:number,port4:hicbit_Port,speed4:number,Features: hicbit_Features)
     {
         let direction1:number
         let direction2:number
         let direciton3:number
         let direciton4:number
-        let buf = pins.createBuffer(255)
+        let buf = pins.createBuffer(30)
 
         if(speed1>0)
         {
             direction1=0x01
         }else if(speed1<0)
         {
+		speed1*=-1;
             direction1=0x02
         }else 
         {
@@ -512,6 +399,7 @@ namespace hicbit {
             direction2=0x01
         }else if(speed2<0)
         {
+		speed2*=-1;
             direction2=0x02
         }else 
         {
@@ -522,6 +410,7 @@ namespace hicbit {
             direciton3=0x01
         }else if(speed3<0)
         {
+		speed3*=-1;
             direciton3=0x02
         }else 
         {
@@ -533,6 +422,7 @@ namespace hicbit {
             direciton4=0x01
         }else if(speed4<0)
         {
+		speed4*=-1;
             direciton4=0x02
         }else 
         {
@@ -541,8 +431,8 @@ namespace hicbit {
 
 
 
-        if(Features==1)
-        {
+        if(Features==2){speed1=speed2=speed3=speed4=0;}
+        
              buf[0] = 0x6F //控制位
              buf[1] = direction1
              buf[2] = port1 
@@ -556,53 +446,17 @@ namespace hicbit {
              buf[10] = direciton4
              buf[11] = port4
              buf[12] = speed4
-             buf[13] = content
-             buf[14] = 0x00 // 0 速度控制 ； // 1.停止//2.时间  // 时间
+             buf[13] = 0x0d
+             buf[14] = 0x0a // 0 速度控制 ； // 1.停止//2.时间  // 时间
+             serial.writeBuffer(buf);
+        
+ 
 
-        }
-        if(Features==2)
-        {
-             buf[0] = 0x6F //控制位
-             buf[1] = direction1
-             buf[2] = port1 
-             buf[3] = speed1 //速度or角度
-             buf[4] = direction2 
-             buf[5] = port2
-             buf[6] = speed2 // 速度or角度
-             buf[7] = direciton3
-             buf[8] = port3
-             buf[9] = speed3
-             buf[10] = direciton4
-             buf[11] = port4
-             buf[12] = speed4
-             buf[13] = content
-             buf[14] = 0x01 // 0 速度控制 ； // 1.停止//2.时间  // 时间
-
-        }
-        if(Features==3)
-        {
-
-             buf[0] = 0x6F //控制位
-             buf[1] = direction1
-             buf[2] = port1 
-             buf[3] = speed1 //速度or角度
-             buf[4] = direction2 
-             buf[5] = port2
-             buf[6] = speed2 // 速度or角度
-             buf[7] = direciton3
-             buf[8] = port3
-             buf[9] = speed3
-             buf[10] = direciton4
-             buf[11] = port4
-             buf[12] = speed4
-             buf[13] = content
-             buf[14] = 0x02 // 0 速度控制 ； // 1.停止//2.时间  // 时间
-        }
 	    
 	    while (serial.readLine().includes("ack")) {
 			break;
 		}
-        basic.pause(100);
+
 
     }
 	/**
@@ -629,11 +483,11 @@ namespace hicbit {
 		let buf=pins.createBuffer(30);
 		angle1+=bias1;
 		angle2+=bias2;
-		if(speed1<0)direction1=0x02;
+		if(speed1<0){direction1=0x02;speed1*=-1;}
 		else if(speed1==0)direction1=0x00;
 		else direction1=0x01;
 		
-		if(speed2<0)direction2=0x02;
+		if(speed2<0){direction2=0x02;speed2*=-1;}
 		else if(speed2==0)direction2=0x00;
 		else direction2=0x01;
 		angle_H1 = angle1 / 0xff;
@@ -659,7 +513,6 @@ namespace hicbit {
 		while (serial.readLine().includes("ack")) {
 			break;
 		}
-        	basic.pause(100);//等待串口发送完毕
 	}
 
 	
@@ -695,15 +548,15 @@ namespace hicbit {
 		angle1+=bias1;
 		angle2+=bias2;
 		angle3+=bias3;
-		if(speed1<0)direction1=0x02;
+		if(speed1<0){direction1=0x02;speed1*=-1;}
 		else if(speed1==0)direction1=0x00;
 		else direction1=0x01;
 		
-		if(speed2<0)direction2=0x02;
+		if(speed2<0){direction2=0x02;speed2*=-1;}
 		else if(speed2==0)direction2=0x00;
 		else direction2=0x01;
 		
-		if(speed3<0)direction3=0x02;
+		if(speed3<0){direction3=0x02;speed3*=-1;}
 		else if(speed3==0)direction3=0x00;
 		else direction3=0x01;
 		
@@ -779,15 +632,15 @@ namespace hicbit {
 		angle2+=bias2;
 		angle3+=bias3;
 		angle4+=bias4;
-		if(speed1<0)direction1=0x02;
+		if(speed1<0){direction1=0x02;speed1*=-1;}
 		else if(speed1==0)direction1=0x00;
 		else direction1=0x01;
 		
-		if(speed2<0)direction2=0x02;
+		if(speed2<0){direction2=0x02;speed2*=-1;}
 		else if(speed2==0)direction2=0x00;
 		else direction2=0x01;
 		
-		if(speed3<0)direction3=0x02;
+		if(speed3<0){direction3=0x02;speed3*=-1;}
 		else if(speed3==0)direction3=0x00;
 		else direction3=0x01;
 		
