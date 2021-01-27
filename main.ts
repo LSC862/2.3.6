@@ -859,7 +859,7 @@ namespace hicbit {
 	angle_H = angle / 0xff;
         angle_L = angle % 0xff;
 	
-
+        if(speed<0)speed*=-1;
         buf[0] = 0x59;      //标志位
         buf[1] = direction
         buf[2] = angle_H;
