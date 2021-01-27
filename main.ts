@@ -796,6 +796,9 @@ namespace hicbit {
 	buf[6] = 0x0d;
 	buf[7] = 0x0a;
         serial.writeBuffer(buf);
+	 while (serial.readLine().includes("ack")) {
+    		break;	
+    }
         basic.pause(100);//等待串口发送完毕
  }
 	
