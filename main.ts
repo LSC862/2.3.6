@@ -35,9 +35,9 @@ namespace hicbit_control {
 
         buf[0] = 0xDD;//地址位::显示器
 	buf[1] = 0x09;//控制位::清空指令；记录LCD显示的数据是在microbit；所以每次启动都会进行一次刷新，再重新写入数据到显示
-        serial.writeBuffer(buf);
-	serial.writeString(Display.NEW_LINE);
-        basic.pause(500);//留给显示器更新的时间
+        buf[2] = 0x0d;
+	buf[3] = 0x0a;
+	serial.writeBuffer(buf);
         while (serial.readLine().includes("ack")) {
 		break;
 		}
