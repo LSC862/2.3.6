@@ -33,7 +33,7 @@
 	"hicbit.hicbit_set_Single_motor|block": "设置|%port|电机速度|%speed|功能|%Features|",
 	"hicbit.hicbit_set_Dual_motor|block": "设置|%port1|电机速度|%speed1|设置|%port2|电机速度|%speed2|功能|%Features|",
 	"hicbit.hicbit_setTripleMotor|block": "设置|%port1|电机速度|%speed1|设置|%port2|电机速度|%speed2|设置|%port3|电机速度|%speed3|功能|%Features|",
-	"hicbit.hicbit_set4Motor|block": "设置|%port1|电机速度|%speed1|功能|设置|%port2|电机速度|%speed2|设置|%port3|电机速度|%speed3|设置|%port4|电机速度|%speed4|功能|%Features|",
+	"hicbit.hicbit_set4Motor|block": "设置|%port1|电机速度|%speed1||设置|%port2|电机速度|%speed2|设置|%port3|电机速度|%speed3|设置|%port4|电机速度|%speed4|功能|%Features|",
 	
 	"{id:category}Sensor": "Hicbit传感器",
 	"Sensor.hicbit_Port.port1|block":"接口1",
