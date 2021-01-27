@@ -38,8 +38,9 @@ namespace hicbit_control {
         serial.writeBuffer(buf);
 	serial.writeString(Display.NEW_LINE);
         basic.pause(500);//留给显示器更新的时间
-        //Display.Clearscreen();
-        //basic.pause(500);
+        while (serial.readLine().includes("ack")) {
+		break;
+		}
     }
 
     //let handleCmd: string = "";
@@ -246,6 +247,10 @@ namespace hicbit {
                 serial.writeBuffer(buf2);
                 //serial.writeString(NEW_LINE); 
         }
+	    
+	    while (serial.readLine().includes("ack")) {
+			break;
+		}	
         basic.pause(100);
     }
 
@@ -346,6 +351,10 @@ namespace hicbit {
             buf2[6] = 0x0a;
 	    serial.writeBuffer(buf2);       
         }
+	    
+	    while (serial.readLine().includes("ack")) {
+			break;
+		}
         basic.pause(100);
 
     }
@@ -454,7 +463,9 @@ namespace hicbit {
              buf[10] = content
              buf[11] = 0x02 // 0 速度控制 ； // 1.停止//2.时间  // 时间
         }
-
+		while (serial.readLine().includes("ack")) {
+			break;
+		}
         basic.pause(100);
     }
 
@@ -587,6 +598,10 @@ namespace hicbit {
              buf[13] = content
              buf[14] = 0x02 // 0 速度控制 ； // 1.停止//2.时间  // 时间
         }
+	    
+	    while (serial.readLine().includes("ack")) {
+			break;
+		}
         basic.pause(100);
 
     }
@@ -640,6 +655,10 @@ namespace hicbit {
 		buf[11]=0x0d;
 		buf[12]=0x0a;
 		serial.writeBuffer(buf);
+		
+		while (serial.readLine().includes("ack")) {
+			break;
+		}
         	basic.pause(100);//等待串口发送完毕
 	}
 
@@ -714,6 +733,9 @@ namespace hicbit {
 		buf[16]=0x0d;
 		buf[17]=0x0a;
 		serial.writeBuffer(buf);
+		while (serial.readLine().includes("ack")) {
+			break;
+		}
         	basic.pause(100);//等待串口发送完毕
 	}
 	
@@ -800,6 +822,9 @@ namespace hicbit {
 		buf[21]=0x0d;
 		buf[22]=0x0a;
 		serial.writeBuffer(buf);
+		while (serial.readLine().includes("ack")) {
+			break;
+		}
         	basic.pause(100);//等待串口发送完毕
 	}
 	
@@ -844,6 +869,9 @@ namespace hicbit {
 	buf[6] = 0x0d;
 	buf[7] = 0x0a;
         serial.writeBuffer(buf);
+	 while (serial.readLine().includes("ack")) {
+			break;
+		}
         basic.pause(100);//等待串口发送完毕
  }
 	
@@ -881,6 +909,9 @@ namespace hicbit {
 	buf[6] = 0x0d;
 	buf[7] = 0x0a;
         serial.writeBuffer(buf);
+	    while (serial.readLine().includes("ack")) {
+			break;
+		}
         basic.pause(100);//等待串口发送完毕
     }
 
