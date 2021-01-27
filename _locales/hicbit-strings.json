@@ -73,6 +73,7 @@
   "hicbit.hicbit_setCodedmotor|block": "Set |port %port| motor|angle %angle|and |speed %speed|",
   "hicbit.hicbit_set_Dual_motor|block": "Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| |Features %Features|: |%content|",
   "hicbit.hicbit_set_Single_motor|block": "Set |port %port| motor|speed %speed| |Features %Features|: |%content|",
+  "hicbit.HTMAC|block":"set |port %port1| motor|angle %angle1|and |speed %speed1|and |bias %bias1| and |port %port2| motor|angle %angle2|and |speed %speed2|and |bias %bias2|",
   "hicbitLight.All|block": "All",
   "hicbitLight.Light1|block": "Light 1",
   "hicbitLight.Light2|block": "Light 2",
