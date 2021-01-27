@@ -4,10 +4,10 @@
 	"hicbit_control.wait_s":"等待指定时间（秒）",
 	"hicbit_control.wait_ms":"等待指定时间（毫秒）",
 
-	"hicbit.hicbit_set_Single_motor": "设置一路电机速度(-255~255)和电机功能",
-	"hicbit.hicbit_set_Dual_motor": "设置两路电机速度(-255~255)和电机功能",
-	"hicbit.hicbit_setCodedmotor":"设置编码电机的角度和速度",
-
+	"hicbit.hicbit_set_Single_motor": "设置一路电机速度(-100~100) 速度的正负决定转动方向",
+	"hicbit.hicbit_set_Dual_motor": "设置两路电机速度(-100~100) 速度的正负决定转动方向",
+	"hicbit_setTripleMotor ":"设置三路电机速度（-100~100） 速度的正负决定转动方向"
+	"hicbit.hicbit_setCodedmotor":"设置一路编码电机的角度和速度",
 	"Sensor.Buzzer":"蜂鸣器控制",
 	"Sensor.hicbit_lineSensorValue":"获取巡线传感器的值",
 	"Sensor.hicbit_ultrasonic":"获得超声波模块测试到的障碍物的距离",
