@@ -32,7 +32,7 @@ namespace hicbit_control {
         /*basic.forever(() => {
             getHandleCmd();
         });*/
-        basic.pause(5000);
+        basic.pause(1000);
         buf[0] = 0xDD;//地址位::显示器
 	buf[1] = 0x09;//控制位::清空指令；记录LCD显示的数据是在microbit；所以每次启动都会进行一次刷新，再重新写入数据到显示
         buf[2] = 0x0d;
