@@ -367,7 +367,6 @@ namespace hicbit {
      * @param port4 
      * @param speed4 
      * @param Features 
-     * @param content 
      */
     //% weight=98 blockId=hicbit_set4Motor block="Set |port %port1| motor |speed %speed1| and |port %port2| motor |speed %speed2| and |port %port3| motor |speed %speed3| and |port %port4| motor |speed %speed4| |Features %Features|"
     //% speed1.min=-100 speed1.max=100 
