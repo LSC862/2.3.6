@@ -1565,7 +1565,7 @@ namespace Display {
             
         }
         serial.writeString(text2);
-        //serial.writeString(NEW_LINE);
+        serial.writeString(NEW_LINE);
 	    while (serial.readLine().includes("DDack")) {
 			break;
 		}
