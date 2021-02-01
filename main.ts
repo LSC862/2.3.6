@@ -38,12 +38,12 @@ namespace hicbit_control {
         buf[2] = 0x0d;
 	buf[3] = 0x0a;
 	serial.writeBuffer(buf);
-        	while(True){
+        	
 	    	while (serial.readLine().includes("DDack")) {
 			break;
 			}
-			serial.writeBuffer(buf);
-		}
+			
+		
     }
 
     //let handleCmd: string = "";
